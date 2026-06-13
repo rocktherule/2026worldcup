@@ -917,103 +917,186 @@ function buildSidebar() {
 
 // ── 실시간 경기 결과 (football-data.org API)
 var API_TOKEN = 'dce0da9ca35f4acd8882e4b63ff89b9d';
-var LIVE_RESULTS = {};  // 'HOME_AWAY' -> [홈득점, 원정득점, 상태]
+var LIVE_RESULTS = {};
 var resultsLoaded = false;
 
-// 팀명 매핑 (API 팀명 → 우리 팀코드)
-var TEAM_MAP = {
-  'Mexico': 'MEX', 'South Africa': 'RSA', 'Korea Republic': 'KOR',
-  'Czechia': 'CZE', 'Czech Republic': 'CZE', 'Canada': 'CAN',
-  'Bosnia and Herzegovina': 'BIH', 'Qatar': 'QAT', 'Switzerland': 'SUI',
-  'Brazil': 'BRA', 'Morocco': 'MAR', 'Haiti': 'HAI', 'Scotland': 'SCO',
-  'USA': 'USA', 'United States': 'USA', 'Paraguay': 'PAR',
-  'Australia': 'AUS', 'Türkiye': 'TUR', 'Turkey': 'TUR',
-  'Germany': 'GER', 'Curaçao': 'CUW', "Côte d'Ivoire": 'CIV',
-  'Ecuador': 'ECU', 'Netherlands': 'NED', 'Japan': 'JPN',
-  'Sweden': 'SWE', 'Tunisia': 'TUN', 'Belgium': 'BEL',
-  'Egypt': 'EGY', 'Iran': 'IRN', 'New Zealand': 'NZL',
-  'Spain': 'ESP', 'Cabo Verde': 'CPV', 'Saudi Arabia': 'KSA',
-  'Uruguay': 'URU', 'France': 'FRA', 'Senegal': 'SEN',
-  'Iraq': 'IRQ', 'Norway': 'NOR', 'Argentina': 'ARG',
-  'Algeria': 'ALG', 'Austria': 'AUT', 'Jordan': 'JOR',
-  'Portugal': 'POR', 'DR Congo': 'COD', 'Uzbekistan': 'UZB',
-  'Colombia': 'COL', 'England': 'ENG', 'Croatia': 'CRO',
-  'Ghana': 'GHA', 'Panama': 'PAN'
+// 폴백: API 실패시 사용할 알려진 결과
+var FALLBACK_RESULTS = {
+  'MEX_RSA': [2, 0, 'FINISHED'],
+  'KOR_CZE': [2, 1, 'FINISHED'],
+  'CAN_BIH': [1, 1, 'FINISHED'],
+  'USA_PAR': [4, 1, 'FINISHED']
 };
+function createInstallBar() {
+  if (bannerShown) return;
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  if (navigator.standalone) return;
+  bannerShown = true;
+
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isAndroid = /android/i.test(navigator.userAgent);
+
+  var bar = document.createElement('div');
+  bar.id = 'pwa-bar';
+  bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0D1529,#162135);border-top:2px solid #D4AF37;padding:10px 14px;box-shadow:0 -4px 20px rgba(0,0,0,0.6);font-family:inherit;padding-bottom:calc(10px + env(safe-area-inset-bottom))';
+
+  var btnLabel = isIOS ? '&#128247; 설치 방법 보기' : '&#8595; 앱 설치';
+  var btnColor = isIOS ? '#5856D6' : '#D4AF37';
+  var btnText = isIOS ? '#fff' : '#000';
+
+  bar.innerHTML =
+    '<img src="/2026worldcup/icon-192.png" style="width:40px;height:40px;border-radius:9px;flex-shrink:0">' +
+    '<div style="flex:1;min-width:0">' +
+      '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3">2026 북중미 월드컵</div>' +
+      '<div style="font-size:10px;color:#D4AF37;margin-top:1px">홈 화면에 앱으로 추가</div>' +
+    '</div>' +
+    '<button id="pwa-install-btn" style="background:' + btnColor + ';color:' + btnText + ';border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">' + btnLabel + '</button>' +
+    '<button id="pwa-close-btn" style="background:rgba(255,255,255,0.1);color:#aaa;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;flex-shrink:0">&#10005;</button>';
+
+  document.body.appendChild(bar);
+  document.getElementById('pwa-close-btn').addEventListener('click', closePwaBar);
+
+  // iOS 안내 팝업
+  if (isIOS) {
+    document.getElementById('pwa-install-btn').addEventListener('click', function() {
+      var guide = document.createElement('div');
+      guide.id = 'ios-guide';
+      guide.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);display:flex;align-items:flex-end;justify-content:center;padding:20px';
+      guide.innerHTML =
+        '<div style="background:#1C2333;border:1px solid #D4AF37;border-radius:16px;padding:24px;width:100%;max-width:360px;font-family:inherit">' +
+          '<div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center">&#127852; 홈 화면에 추가하기</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
+            '<div style="font-size:24px">1&#65039;&#8419;</div>' +
+            '<div style="font-size:13px;color:#ccc">하단 가운데 <strong style="color:#fff">공유 버튼 (&#9633;&#8679;)</strong> 탭</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
+            '<div style="font-size:24px">2&#65039;&#8419;</div>' +
+            '<div style="font-size:13px;color:#ccc"><strong style="color:#fff">홈 화면에 추가</strong> 선택 후 추가 탭</div>' +
+          '</div>' +
+          '<button onclick="closeGuide('ios-guide')" style="width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">확인</button>' +
+        '</div>';
+      document.body.appendChild(guide);
+    });
+  } else {
+    // Android: 네이티브 프롬프트 또는 안내
+    document.getElementById('pwa-install-btn').addEventListener('click', function() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function(r) {
+          if (r.outcome === 'accepted') closePwaBar();
+          deferredPrompt = null;
+        });
+      } else {
+        // Chrome 메뉴 안내
+        var guide = document.createElement('div');
+        guide.id = 'android-guide';
+        guide.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;padding:20px';
+        guide.innerHTML =
+          '<div style="background:#1C2333;border:1px solid #D4AF37;border-radius:16px;padding:24px;width:100%;max-width:360px;font-family:inherit">' +
+            '<div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center">&#128241; 홈 화면에 추가하기</div>' +
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
+              '<div style="font-size:24px">1&#65039;&#8419;</div>' +
+              '<div style="font-size:13px;color:#ccc">Chrome 우상단 <strong style="color:#fff">&#8942; 메뉴</strong> 탭</div>' +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
+              '<div style="font-size:24px">2&#65039;&#8419;</div>' +
+              '<div style="font-size:13px;color:#ccc"><strong style="color:#fff">홈 화면에 추가</strong> 선택</div>' +
+            '</div>' +
+            '<button onclick="closeGuide('android-guide')" style="width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">확인</button>' +
+          '</div>';
+        document.body.appendChild(guide);
+      }
+    });
+  }
+
+  var shell = document.querySelector('.shell');
+  if (shell) shell.style.paddingBottom = '70px';
+}
+
+
+// ── SHOW STAGE
+function showStage(s) {
+  var stages = ['group','r32','r16','qf','sf','final'];
+  var btns = document.querySelectorAll('.stab');
+  for (var i=0; i<btns.length; i++) btns[i].classList.toggle('on', stages[i]===s);
+  var panels = document.querySelectorAll('.stage-panel');
+  for (var j=0; j<panels.length; j++) panels[j].classList.remove('on');
+  document.getElementById('panel-'+s).classList.add('on');
+}
+
+// ── FETCH RESULTS (football-data.org API)
+
+var TEAM_MAP = {
+  'Mexico':'MEX','South Africa':'RSA','Korea Republic':'KOR','Korea DPR':'PRK',
+  'Czechia':'CZE','Czech Republic':'CZE','Canada':'CAN','Bosnia and Herzegovina':'BIH',
+  'Qatar':'QAT','Switzerland':'SUI','Brazil':'BRA','Morocco':'MAR','Haiti':'HAI',
+  'Scotland':'SCO','USA':'USA','United States':'USA','Paraguay':'PAR',
+  'Australia':'AUS','Turkiye':'TUR','Turkey':'TUR','Germany':'GER',
+  'Curacao':'CUW','Cote d Ivoire':'CIV','Ivory Coast':'CIV','Ecuador':'ECU',
+  'Netherlands':'NED','Japan':'JPN','Sweden':'SWE','Tunisia':'TUN',
+  'Belgium':'BEL','Egypt':'EGY','IR Iran':'IRN','Iran':'IRN','New Zealand':'NZL',
+  'Spain':'ESP','Cabo Verde':'CPV','Saudi Arabia':'KSA','Uruguay':'URU',
+  'France':'FRA','Senegal':'SEN','Iraq':'IRQ','Norway':'NOR','Argentina':'ARG',
+  'Algeria':'ALG','Austria':'AUT','Jordan':'JOR','Portugal':'POR',
+  'Congo DR':'COD','DR Congo':'COD','Uzbekistan':'UZB','Colombia':'COL',
+  'England':'ENG','Croatia':'CRO','Ghana':'GHA','Panama':'PAN'
+};
+
+var bannerShown = false;
+var deferredPrompt = null;
 
 function fetchResults() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', 'https://api.football-data.org/v4/competitions/WC/matches', true);
   xhr.setRequestHeader('X-Auth-Token', API_TOKEN);
   xhr.timeout = 8000;
-
   xhr.onload = function() {
     if (xhr.status === 200) {
       try {
         var data = JSON.parse(xhr.responseText);
         var matches = data.matches || [];
-        LIVE_RESULTS = {};
-
         matches.forEach(function(m) {
           var status = m.status;
           if (status !== 'FINISHED' && status !== 'IN_PLAY' && status !== 'PAUSED') return;
-
           var home = TEAM_MAP[m.homeTeam.name] || m.homeTeam.tla;
           var away = TEAM_MAP[m.awayTeam.name] || m.awayTeam.tla;
           if (!home || !away) return;
-
           var score = m.score;
           var hg = score.fullTime.home;
           var ag = score.fullTime.away;
-
-          // IN_PLAY 중에는 currentPeriod 스코어
-          if (status === 'IN_PLAY' || status === 'PAUSED') {
-            hg = score.halfTime.home !== null ? score.fullTime.home : 0;
-            ag = score.halfTime.away !== null ? score.fullTime.away : 0;
-          }
-
           if (hg === null || ag === null) return;
-
-          var key = home + '_' + away;
-          LIVE_RESULTS[key] = [hg, ag, status];
+          LIVE_RESULTS[home + '_' + away] = [hg, ag, status];
         });
-
         resultsLoaded = true;
-        // 현재 보이는 날짜 새로고침
         buildMatchList(activeDate);
-        console.log('결과 로드 완료:', Object.keys(LIVE_RESULTS).length + '경기');
-      } catch(e) {
-        console.log('파싱 오류:', e);
-      }
+      } catch(e) { console.log('파싱 오류:', e); }
     }
   };
-
-  xhr.onerror = xhr.ontimeout = function() {
-    console.log('API 호출 실패 - 오프라인 모드');
-  };
-
+  xhr.onerror = xhr.ontimeout = function() { console.log('API 실패 - 폴백 사용'); };
   xhr.send();
 }
 
 function getResult(hc, ac, dk, kst) {
   var key = hc + '_' + ac;
-  var r = LIVE_RESULTS[key];
+  var r = LIVE_RESULTS[key] || FALLBACK_RESULTS[key];
   if (!r) return null;
-  return [r[0], r[1], r[2]]; // [홈득점, 원정득점, 상태]
+  return [r[0], r[1], r[2]];
 }
 
-// 페이지 로드 시 결과 가져오기
-window.addEventListener('load', function() {
-  fetchResults();
-  // 5분마다 자동 갱신 (진행 중 경기 실시간 업데이트)
-  setInterval(fetchResults, 5 * 60 * 1000);
-});
+// ── SELECT DATE
+function selectDate(key) {
+  activeDate = key;
+  buildSidebar();
+  buildMatchList(key);
+}
 
+// ── BUILD MATCH LIST
 function buildMatchList(dateKey) {
   var idxs = [];
   for (var i=0; i<GM.length; i++) { if (GM[i][3] === dateKey) idxs.push(i); }
   idxs.sort(function(a,b){ return GM[a][4].localeCompare(GM[b][4]); });
   var panel = document.getElementById('match-panel');
+  if (!panel) return;
   if (!idxs.length) {
     panel.innerHTML = '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted)"><div style="font-size:36px;opacity:.2">&#9917;</div><div style="font-size:11px">해당 날짜에 경기가 없습니다</div></div>';
     return;
@@ -1022,45 +1105,45 @@ function buildMatchList(dateKey) {
   for (var j=0; j<idxs.length; j++) {
     var idx = idxs[j];
     var m = GM[idx];
-    var grp=m[0], hc=m[1], ac=m[2], dk=m[3], kst=m[4], stadium=m[5], city=m[6], note=m[7];
+    var grp=m[0],hc=m[1],ac=m[2],dk=m[3],kst=m[4],stadium=m[5],city=m[6],note=m[7];
     var h = T[hc] || ['&#127987;',hc,99,0,'-',0,0,0,0,0];
     var a = T[ac] || ['&#127987;',ac,99,0,'-',0,0,0,0,0];
     var isKor = hc==='KOR' || ac==='KOR';
-    var noteIsKor = note && note.indexOf('🔴') >= 0;
+    var noteIsKor = note && note.indexOf('&#128308;') >= 0;
     var korCls = isKor ? 'kor' : '';
-    var noteHtml = note ? '<div class="m-note '+(noteIsKor?'kor':'')+'">'+ note.replace('🔴','&#128308;').replace('⭐','&#11088;') +'</div>' : '';
+    var noteHtml = note ? '<div class="m-note '+(noteIsKor?'kor':'')+'">'+note.replace('&#11088;','&#11088;')+'</div>' : '';
+    var res = getResult(hc, ac, dk, kst);
+    var doneCls = res ? 'done' : '';
+    var hScoreCol = res ? (res[0]>res[1]?'m-score-win':res[0]<res[1]?'m-score-lose':'m-score-draw') : '';
+    var aScoreCol = res ? (res[1]>res[0]?'m-score-win':res[1]<res[0]?'m-score-lose':'m-score-draw') : '';
+    var hNameStyle = res && res[0]>res[1] ? 'color:var(--gold);font-weight:900' : res && res[0]<res[1] ? 'color:var(--muted)' : '';
+    var aNameStyle = res && res[1]>res[0] ? 'color:var(--gold);font-weight:900' : res && res[1]<res[0] ? 'color:var(--muted)' : '';
     html += '<div class="match-row '+korCls+' '+doneCls+'" onclick="openPred('+idx+')">';
     html += '<div class="m-accent"></div>';
     html += '<div class="m-time"><div class="m-kst">'+kst+'</div><div class="m-kst-lbl">KST</div>'+noteHtml+'</div>';
-    html += '<div class="m-grp"><span class="gtag">'+grp+'조</span></div>';
-    var res = getResult(hc, ac, dk, kst);
-    var doneCls = res ? 'done' : '';
-    var hScoreCol = res ? (res[0]>res[1]?'m-score-win':res[0]<res[1]?'m-score-lose':'m-score-draw') : 'm-score-h';
-    var aScoreCol = res ? (res[1]>res[0]?'m-score-win':res[1]<res[0]?'m-score-lose':'m-score-draw') : 'm-score-a';
-    var hNameStyle = res && res[0]>res[1] ? 'color:var(--gold);font-weight:900' : res && res[0]<res[1] ? 'color:var(--muted)' : '';
-    var aNameStyle = res && res[1]>res[0] ? 'color:var(--gold);font-weight:900' : res && res[1]<res[0] ? 'color:var(--muted)' : '';
-
+    html += '<div class="m-grp"><span class="gtag">'+grp+'&#51312;</span></div>';
     html += '<div class="m-teams">';
-    html += '<div class="m-team"><div class="m-flag">'+flagImg(hc)+'</div><div class="m-info"><div class="m-name" style="'+hNameStyle+'">'+h[1]+'</div><div class="m-rank">FIFA '+h[2]+'위</div><div class="m-hist">'+h[4]+' &middot; '+h[3]+'회</div></div></div>';
+    html += '<div class="m-team"><div class="m-flag">'+flagImg(hc)+'</div><div class="m-info"><div class="m-name" style="'+hNameStyle+'">'+h[1]+'</div><div class="m-rank">FIFA '+h[2]+'&#50948;</div><div class="m-hist">'+h[4]+' &middot; '+h[3]+'&#54924;</div></div></div>';
     if (res) {
-      var statusLabel = (res[2] === 'IN_PLAY' || res[2] === 'PAUSED') ? '&#128308; LIVE' : '종료';
-      var statusStyle = (res[2] === 'IN_PLAY' || res[2] === 'PAUSED') ? 'background:rgba(239,68,68,.2);color:#EF4444;border-color:rgba(239,68,68,.4);animation:blink 1.2s infinite' : '';
-      html += '<div class="m-score-wrap"><div class="m-score-nums"><span class="'+hScoreCol+'">'+res[0]+'</span><span class="m-score-sep">:</span><span class="'+aScoreCol+'">'+res[1]+'</span></div><div class="m-ft-lbl" style="'+statusStyle+'">'+statusLabel+'</div></div>';
+      var statusLabel = (res[2]==='IN_PLAY'||res[2]==='PAUSED') ? '&#128308; LIVE' : '&#51333;&#47308;';
+      var liveStyle = (res[2]==='IN_PLAY'||res[2]==='PAUSED') ? 'background:rgba(239,68,68,.2);color:#EF4444;border-color:rgba(239,68,68,.4);animation:blink 1.2s infinite' : '';
+      html += '<div class="m-score-wrap"><div class="m-score-nums"><span class="'+hScoreCol+'">'+res[0]+'</span><span class="m-score-sep">:</span><span class="'+aScoreCol+'">'+res[1]+'</span></div><div class="m-ft-lbl" style="'+liveStyle+'">'+statusLabel+'</div></div>';
     } else {
       html += '<div class="m-vs">VS</div>';
     }
-    html += '<div class="m-team away"><div class="m-flag">'+flagImg(ac)+'</div><div class="m-info"><div class="m-name" style="'+aNameStyle+'">'+a[1]+'</div><div class="m-rank">FIFA '+a[2]+'위</div><div class="m-hist">'+a[4]+' &middot; '+a[3]+'회</div></div></div>';
+    html += '<div class="m-team away"><div class="m-flag">'+flagImg(ac)+'</div><div class="m-info"><div class="m-name" style="'+aNameStyle+'">'+a[1]+'</div><div class="m-rank">FIFA '+a[2]+'&#50948;</div><div class="m-hist">'+a[4]+' &middot; '+a[3]+'&#54924;</div></div></div>';
     html += '</div>';
-    html += '<div class="m-venue"><div class="v-city">'+city+'</div><div class="v-stadium">'+stadium+'</div><div class="v-click">&#128070; 승부 예측</div></div>';
+    html += '<div class="m-venue"><div class="v-city">'+city+'</div><div class="v-stadium">'+stadium+'</div><div class="v-click">&#128070; &#49949;부 &#50696;&#52769;</div></div>';
     html += '</div>';
   }
   panel.innerHTML = html;
 }
-function selectDate(key) { activeDate = key; buildSidebar(); buildMatchList(key); }
 
+// ── BUILD KO
 function buildKO(sk, gid) {
   var data = KO_DATA[sk];
   var grid = document.getElementById(gid);
+  if (!grid) return;
   var html = '', last = '';
   for (var i=0; i<data.length; i++) {
     var m = data[i];
@@ -1076,119 +1159,32 @@ function buildKO(sk, gid) {
   grid.innerHTML = html;
 }
 
-function showStage(s) {
-  var stages = ['group','r32','r16','qf','sf','final'];
-  var btns = document.querySelectorAll('.stab');
-  for (var i=0; i<btns.length; i++) btns[i].classList.toggle('on', stages[i]===s);
-  var panels = document.querySelectorAll('.stage-panel');
-  for (var j=0; j<panels.length; j++) panels[j].classList.remove('on');
-  document.getElementById('panel-'+s).classList.add('on');
+// ── CLOSE PWA BAR
+
+function closeGuide(id) {
+  var el = document.getElementById(id);
+  if (el) el.remove();
 }
 
-buildSidebar();
-buildMatchList(activeDate);
-buildKO('r32','ko-r32');
-buildKO('r16','ko-r16');
-buildKO('qf','ko-qf');
-buildKO('sf','ko-sf');
-buildKO('final','ko-final');
-
-</script>
-
-<script>
-// ── Service Worker 등록
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/2026worldcup/sw.js');
-  });
-}
-
-// ── 설치 배너 (Android Chrome)
-var deferredPrompt = null;
-var bannerShown = false;
-
-// 항상 보이는 하단 설치 바 생성
-function createInstallBar() {
-  if (bannerShown) return;
-  if (window.matchMedia('(display-mode: standalone)').matches) return;
-  if (navigator.standalone) return; // iOS 설치됨
-  bannerShown = true;
-
-  var bar = document.createElement('div');
-  bar.id = 'pwa-bar';
-  bar.style.cssText = [
-    'position:fixed', 'bottom:0', 'left:0', 'right:0', 'z-index:9999',
-    'display:flex', 'align-items:center', 'gap:10px',
-    'background:linear-gradient(135deg,#0D1529,#162135)',
-    'border-top:2px solid #D4AF37',
-    'padding:10px 14px',
-    'box-shadow:0 -4px 20px rgba(0,0,0,0.6)',
-    'font-family:"Noto Sans KR",sans-serif',
-    'padding-bottom:calc(10px + env(safe-area-inset-bottom))'
-  ].join(';');
-
-  bar.innerHTML =
-    '<img src="/2026worldcup/icon-192.png" style="width:40px;height:40px;border-radius:9px;flex-shrink:0">' +
-    '<div style="flex:1;min-width:0">' +
-      '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3">2026 북중미 월드컵</div>' +
-      '<div style="font-size:10px;color:#D4AF37;margin-top:1px">홈 화면에 앱으로 추가하기</div>' +
-    '</div>' +
-    '<button id="pwa-install-btn" style="' +
-      'background:#D4AF37;color:#000;border:none;border-radius:20px;' +
-      'padding:8px 16px;font-size:12px;font-weight:900;cursor:pointer;' +
-      'font-family:inherit;white-space:nowrap;flex-shrink:0' +
-    '">&#8595; 앱 설치</button>' +
-    '<button id="pwa-close-btn" style="' +
-      'background:rgba(255,255,255,0.1);color:#aaa;border:none;border-radius:50%;' +
-      'width:26px;height:26px;font-size:14px;cursor:pointer;flex-shrink:0' +
-    '">&#10005;</button>';
-
-  document.body.appendChild(bar);
-  document.getElementById('pwa-close-btn').addEventListener('click', closePwaBar);
-
-  // 콘텐츠 하단 패딩
-  document.querySelector('.shell').style.paddingBottom = '70px';
-
-  document.getElementById('pwa-install-btn').addEventListener('click', function() {
-    if (deferredPrompt) {
-      // Android Chrome 네이티브 설치
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function(r) {
-        if (r.outcome === 'accepted') {
-          document.getElementById('pwa-bar').remove();
-        }
-        deferredPrompt = null;
-      });
-    } else {
-      // iOS Safari 안내
-      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-      if (isIOS) {
-        alert('Safari 하단 공유버튼(□↑) 탭 후 홈 화면에 추가 선택!');
-      } else {
-        alert('Chrome 우상단 메뉴(⋮) 탭 후 홈 화면에 추가 선택!');
-      }
-    }
-  });
-}
-
-// beforeinstallprompt 이벤트 (Android Chrome 자동)
-window.addEventListener('beforeinstallprompt', function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  createInstallBar();
-});
-
-// 페이지 로드 시 항상 설치 바 표시 (아직 설치 안 된 경우)
-window.addEventListener('load', function() {
-  setTimeout(createInstallBar, 1000);
-});
-
-// 설치 완료
-function closePwaBar() { var b=document.getElementById('pwa-bar'); if(b){b.remove(); var s=document.querySelector('.shell'); if(s)s.style.paddingBottom='';} }
-
-window.addEventListener('appinstalled', function() {
+function closePwaBar() {
   var bar = document.getElementById('pwa-bar');
   if (bar) bar.remove();
+  var shell = document.querySelector('.shell');
+  if (shell) shell.style.paddingBottom = '';
+}
+
+// ── INIT
+window.addEventListener('load', function() {
+  buildSidebar();
+  buildMatchList(activeDate);
+  buildKO('r32','ko-r32');
+  buildKO('r16','ko-r16');
+  buildKO('qf','ko-qf');
+  buildKO('sf','ko-sf');
+  buildKO('final','ko-final');
+  fetchResults();
+  setInterval(fetchResults, 5*60*1000);
+  setTimeout(createInstallBar, 1200);
 });
-</script>
-</body>
+
+>
