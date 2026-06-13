@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="북중미 월드컵">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#D4AF37">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+<title>2026 북중미 월드컵</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+:root{
+  --gold:#D4AF37;--gold-l:#F5D76E;
+  --dark:#09101F;--dark2:#0F172A;--dark3:#141E33;--card:#131C2E;
+  --blue:#3B82F6;--red:#EF4444;--green:#22C55E;--purple:#A855F7;
+  --text:#E2E8F0;--muted:#64748B;--border:rgba(212,175,55,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:var(--dark);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;line-height:1.5;min-height:100vh;}
+.shell{width:100%;aspect-ratio:16/9;min-height:600px;display:flex;flex-direction:column;overflow:hidden;}
+/* HEADER */
+.hdr{display:flex;align-items:stretch;background:linear-gradient(135deg,#060C1A,#0D1529,#0f1e38);border-bottom:2px solid var(--gold);flex-shrink:0;position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(-55deg,transparent,transparent 38px,rgba(212,175,55,.022) 38px,rgba(212,175,55,.022) 39px);}
+.hdr-trophy{width:64px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:30px;background:linear-gradient(180deg,rgba(212,175,55,.15),rgba(212,175,55,.05));border-right:1px solid rgba(212,175,55,.18);filter:drop-shadow(0 0 8px rgba(212,175,55,.6));}
+.hdr-title-block{padding:10px 18px;border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;justify-content:center;gap:3px;flex-shrink:0;}
+.hdr-en{font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:2px;color:var(--gold);white-space:nowrap;}
+.hdr-big{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;color:#fff;line-height:1;white-space:nowrap;}
+.hdr-big em{color:var(--gold);font-style:normal;}
+.hdr-kor{font-size:14px;font-weight:900;color:#fff;white-space:nowrap;line-height:1;}
+.hdr-kor em{color:var(--gold);}
+.hdr-info{flex:1;padding:10px 16px;display:flex;flex-direction:column;justify-content:center;gap:6px;min-width:0;}
+.pill-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.pill{font-size:10px;font-weight:700;padding:3px 10px;border-radius:16px;background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.22);color:var(--gold-l);white-space:nowrap;}
+.pill.bl{background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.25);color:#93C5FD;}
+.pill.rd{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.25);color:#FCA5A5;}
+.hdr-desc{font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+
+
+
+
+
+/* TABS */
+.stage-bar{display:flex;gap:0;padding:0 16px;background:var(--dark2);border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;overflow-x:auto;}
+.stage-bar::-webkit-scrollbar{display:none;}
+.stab{padding:8px 16px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;border-radius:4px 4px 0 0;white-space:nowrap;transition:all .18s;background:transparent;border-left:none;border-right:none;border-top:none;}
+.stab:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.stab.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(212,175,55,.07);}
+/* BODY */
+.body{flex:1;display:flex;overflow:hidden;}
+.stage-panel{display:none;flex:1;overflow:hidden;}
+.stage-panel.on{display:flex;}
+.group-layout{display:flex;width:100%;overflow:hidden;}
+/* DATE SIDEBAR */
+.date-sidebar{width:130px;flex-shrink:0;background:var(--dark2);border-right:1px solid rgba(255,255,255,.06);overflow-y:auto;padding:6px 4px;}
+.date-sidebar::-webkit-scrollbar{width:3px;}
+.date-sidebar::-webkit-scrollbar-thumb{background:rgba(212,175,55,.25);border-radius:2px;}
+.dsb-lbl{font-size:8px;font-weight:700;color:var(--muted);padding:6px 8px 4px;white-space:nowrap;}
+.date-btn{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;padding:6px 8px;cursor:pointer;color:var(--muted);transition:all .15s;margin-bottom:2px;display:flex;align-items:center;gap:5px;}
+.date-btn:hover{background:rgba(255,255,255,.04);color:var(--text);border-color:rgba(255,255,255,.07);}
+.date-btn.on{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.35);color:var(--gold);}
+.d-info{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+.d-date{font-size:11px;font-weight:900;line-height:1;color:inherit;}
+.d-dow{font-size:9px;font-weight:500;color:inherit;opacity:.8;}
+.d-cnt{font-size:8px;color:inherit;opacity:.7;white-space:nowrap;}
+.d-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+.date-btn.kor .d-dot{background:var(--red);}
+.date-btn.on .d-dot{background:var(--gold);}
+/* MATCH PANEL */
+.match-panel{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
+.match-panel::-webkit-scrollbar{width:4px;}
+.match-panel::-webkit-scrollbar-thumb{background:rgba(212,175,55,.25);border-radius:2px;}
+/* MATCH ROW */
+.match-row{display:flex;align-items:stretch;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-height:72px;cursor:pointer;transition:border-color .18s,transform .12s,box-shadow .18s;}
+.match-row:hover{border-color:rgba(212,175,55,.55);transform:translateX(2px);box-shadow:0 2px 14px rgba(0,0,0,.4);}
+.match-row.kor{border-color:rgba(239,68,68,.45);}
+.match-row.kor:hover{border-color:rgba(239,68,68,.8);}
+.m-accent{width:3px;flex-shrink:0;background:linear-gradient(180deg,var(--gold),transparent);}
+.match-row.kor .m-accent{background:linear-gradient(180deg,var(--red),transparent);}
+.m-time{width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;border-right:1px solid rgba(255,255,255,.05);gap:1px;}
+.m-kst{font-size:17px;font-weight:900;color:var(--blue);letter-spacing:.3px;line-height:1;}
+.m-kst-lbl{font-size:7px;color:var(--blue);opacity:.6;font-weight:700;}
+.m-note{font-size:7px;color:var(--gold);font-weight:700;text-align:center;word-break:keep-all;overflow-wrap:break-word;white-space:normal;line-height:1.4;max-width:72px;margin-top:2px;}
+.m-note.kor{color:var(--red);}
+.m-grp{width:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-right:1px solid rgba(255,255,255,.05);}
+.gtag{background:var(--gold);color:#000;font-size:9px;font-weight:900;padding:2px 6px;border-radius:10px;}
+.m-teams{flex:1;display:flex;align-items:center;padding:8px 12px;gap:0;min-width:0;}
+.m-team{flex:1;display:flex;align-items:center;gap:8px;min-width:0;}
+.m-team.away{flex-direction:row-reverse;}
+.m-flag{font-size:30px;line-height:1;flex-shrink:0;}
+.m-info{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.m-team.away .m-info{align-items:flex-end;}
+.m-name{font-size:15px;font-weight:900;color:var(--text);word-break:keep-all;overflow-wrap:break-word;white-space:normal;line-height:1.3;}
+.m-rank{font-size:9px;color:var(--muted);font-weight:500;white-space:nowrap;}
+.m-hist{font-size:7.5px;color:var(--muted);word-break:keep-all;overflow-wrap:break-word;white-space:normal;line-height:1.4;}
+.m-vs{width:40px;flex-shrink:0;text-align:center;font-family:'Bebas Neue',cursive;font-size:18px;color:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;}
+.m-venue{width:148px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;padding:0 10px;border-left:1px solid rgba(255,255,255,.05);text-align:right;gap:2px;}
+.v-city{font-size:10px;font-weight:700;color:var(--text);word-break:keep-all;white-space:normal;line-height:1.3;}
+.v-stadium{font-size:7.5px;color:var(--muted);word-break:keep-all;white-space:normal;line-height:1.4;}
+.v-click{font-size:7px;color:var(--gold);opacity:.65;margin-top:2px;font-weight:700;}
+/* KO */
+.ko-layout{flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:6px;}
+.ko-layout::-webkit-scrollbar{width:4px;}
+.ko-layout::-webkit-scrollbar-thumb{background:rgba(59,130,246,.25);border-radius:2px;}
+.ko-date-sep{font-size:10px;font-weight:700;color:var(--muted);padding:6px 2px 2px;}
+.ko-row{display:flex;align-items:stretch;background:var(--card);border:1px solid rgba(59,130,246,.18);border-radius:10px;overflow:hidden;min-height:58px;transition:border-color .18s;}
+.ko-row:hover{border-color:rgba(59,130,246,.45);}
+.ko-accent{width:3px;flex-shrink:0;background:linear-gradient(180deg,var(--blue),transparent);}
+.ko-time{width:80px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 8px;border-right:1px solid rgba(255,255,255,.05);gap:1px;}
+.ko-kst{font-size:16px;font-weight:900;color:var(--gold);line-height:1;}
+.ko-kst-lbl{font-size:7px;color:var(--gold);opacity:.6;font-weight:700;}
+.ko-rtag{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0 6px;border-right:1px solid rgba(255,255,255,.05);}
+.ko-rtag span{font-size:10px;font-weight:900;color:var(--blue);text-align:center;word-break:keep-all;white-space:normal;line-height:1.4;}
+.ko-matchup{flex:1;display:flex;align-items:center;padding:0 14px;font-size:11px;color:var(--muted);font-weight:500;word-break:keep-all;white-space:normal;line-height:1.5;}
+.ko-venue{width:170px;flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;padding:0 12px;border-left:1px solid rgba(255,255,255,.05);font-size:9px;color:var(--muted);text-align:right;word-break:keep-all;white-space:normal;line-height:1.5;}
+.final-row{border-color:rgba(212,175,55,.5)!important;background:linear-gradient(90deg,#1A1400,#1E1800)!important;}
+.final-row .ko-accent{background:linear-gradient(180deg,var(--gold),transparent)!important;}
+.final-row .ko-kst{font-size:19px!important;color:var(--gold)!important;}
+/* PREDICTION MODAL */
+.pred-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.pred-overlay.show{display:flex;}
+.pred-box{background:linear-gradient(135deg,#0F1829,#162135);border:1px solid var(--gold);border-radius:16px;width:640px;max-width:100%;margin:auto;padding:24px 22px 20px;position:relative;box-shadow:0 8px 60px rgba(0,0,0,.8);}
+.pred-box::-webkit-scrollbar{width:4px;}
+/* Close buttons */
+.pred-close{position:absolute;top:12px;right:12px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:50%;font-size:16px;cursor:pointer;color:var(--text);transition:all .15s;z-index:10;}
+.pred-close:hover{background:rgba(239,68,68,.3);border-color:var(--red);color:var(--red);}
+.ext-close{position:fixed;top:12px;right:12px;z-index:200;display:none;width:44px;height:44px;align-items:center;justify-content:center;background:rgba(9,16,31,.95);border:2px solid var(--gold);border-radius:50%;font-size:20px;cursor:pointer;color:var(--gold);box-shadow:0 4px 20px rgba(0,0,0,.8);transition:all .15s;}
+.ext-close:hover{background:rgba(239,68,68,.25);border-color:var(--red);color:var(--red);}
+.ext-close.show{display:flex;}
+.tap-hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;display:none;font-size:11px;color:rgba(255,255,255,.5);background:rgba(0,0,0,.6);padding:5px 14px;border-radius:20px;pointer-events:none;white-space:nowrap;}
+.tap-hint.show{display:block;}
+/* Pred header */
+.pred-hdr{text-align:center;margin-bottom:14px;padding-top:2px;}
+.pred-tag{font-size:12px;font-weight:700;color:var(--gold);}
+.pred-date{font-size:10px;color:var(--muted);margin-top:3px;}
+/* Matchup */
+.pred-mu{display:flex;align-items:center;gap:6px;margin-bottom:12px;}
+.pred-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;background:rgba(255,255,255,.03);border-radius:10px;}
+.pred-flag{font-size:40px;line-height:1;}.pred-flag img{height:2.2em!important;width:auto!important;vertical-align:middle!important;border-radius:3px;}
+.pred-tname{font-size:14px;font-weight:900;color:var(--text);text-align:center;word-break:keep-all;white-space:normal;line-height:1.3;}
+.pred-rank{font-size:10px;color:var(--gold);font-weight:700;}
+.pred-hist-s{font-size:8px;color:var(--muted);text-align:center;word-break:keep-all;white-space:normal;line-height:1.5;}
+.pred-mid{width:60px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.pred-vs{font-family:'Bebas Neue',cursive;font-size:24px;color:rgba(255,255,255,.18);}
+.pred-grplbl{font-size:9px;color:var(--muted);font-weight:600;}
+/* Score */
+.pred-score-wrap{background:rgba(0,0,0,.35);border:1px solid rgba(212,175,55,.2);border-radius:12px;padding:12px 16px;margin-bottom:10px;text-align:center;}
+.pred-score-lbl{font-size:10px;font-weight:700;color:var(--gold);margin-bottom:7px;}
+.pred-score{display:flex;align-items:center;justify-content:center;gap:12px;}
+.pred-score-num{font-family:'Bebas Neue',cursive;font-size:50px;color:#fff;line-height:1;min-width:44px;text-align:center;}
+.pred-score-dash{font-family:'Bebas Neue',cursive;font-size:32px;color:var(--muted);}
+.pred-winner{margin-top:7px;font-size:12px;font-weight:700;}
+.pred-winner em{color:var(--gold);font-style:normal;}
+/* Bar */
+.pred-bar-wrap{margin-bottom:10px;}
+.pred-bar-lbl{display:flex;justify-content:space-between;margin-bottom:4px;}
+.pred-bar-lbl span{font-size:9px;font-weight:700;}
+.pred-bar-lbl .pct{font-size:11px;font-weight:900;}
+.pred-bar-bg{height:10px;border-radius:5px;background:rgba(255,255,255,.07);overflow:hidden;display:flex;}
+.pred-bar-h{height:100%;background:linear-gradient(90deg,var(--blue),#60A5FA);border-radius:5px 0 0 5px;transition:width .5s ease;}
+.pred-bar-a{height:100%;background:linear-gradient(90deg,#F87171,var(--red));border-radius:0 5px 5px 0;transition:width .5s ease;}
+.pred-bar-draw{height:100%;background:rgba(212,175,55,.5);}
+/* Stats */
+.pred-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.pred-stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:8px 10px;}
+.pred-stat-lbl{font-size:9px;font-weight:700;color:var(--muted);margin-bottom:4px;word-break:keep-all;white-space:normal;}
+.pred-stat-row{display:flex;justify-content:space-between;align-items:center;margin-top:2px;}
+.pred-stat-team{font-size:8.5px;color:var(--muted);word-break:keep-all;white-space:normal;}
+.pred-stat-val{font-size:11px;font-weight:900;color:var(--text);}
+.pred-stat-val.hi{color:var(--green);}.pred-stat-val.lo{color:var(--red);}
+/* Analysis */
+.pred-analysis{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);border-radius:10px;padding:10px 12px;font-size:10px;color:var(--muted);word-break:keep-all;white-space:normal;line-height:1.7;margin-bottom:10px;}
+.pred-analysis strong{color:var(--gold-l);}
+/* PLAYER SECTION */
+.player-toggle-row{display:flex;gap:8px;margin-bottom:10px;}
+.player-toggle-btn{flex:1;padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);cursor:pointer;color:var(--muted);font-size:10px;font-weight:700;transition:all .18s;font-family:inherit;}
+.player-toggle-btn:hover{border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,.08);}
+.player-toggle-btn.on{border-color:var(--purple);color:var(--purple);background:rgba(168,85,247,.12);}
+.player-section{display:none;background:rgba(168,85,247,.05);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:14px;margin-bottom:10px;}
+.player-section.show{display:block;}
+.player-section-title{font-size:10px;font-weight:700;color:var(--purple);margin-bottom:10px;}
+.players-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.player-card{background:rgba(255,255,255,.04);border:1px solid rgba(168,85,247,.15);border-radius:10px;overflow:hidden;}
+.player-photo{width:100%;height:90px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(59,130,246,.1));font-size:52px;border-bottom:1px solid rgba(255,255,255,.06);}
+.player-body{padding:8px 10px;}
+.player-name{font-size:11px;font-weight:900;color:var(--text);margin-bottom:4px;word-break:keep-all;white-space:normal;}
+.player-pos{display:inline-block;font-size:7.5px;font-weight:700;padding:1px 6px;border-radius:10px;background:rgba(168,85,247,.2);color:var(--purple);margin-bottom:5px;}
+.player-row{display:flex;justify-content:space-between;margin-top:2px;gap:4px;}
+.player-key{font-size:8px;color:var(--muted);flex-shrink:0;}
+.player-val{font-size:8px;color:var(--text);font-weight:500;text-align:right;word-break:keep-all;white-space:normal;}
+.player-comment{margin-top:6px;font-size:8px;color:var(--muted);line-height:1.5;word-break:keep-all;white-space:normal;border-top:1px solid rgba(255,255,255,.06);padding-top:5px;}
+/* INFO BAR */
+.info-bar{display:flex;align-items:center;gap:14px;padding:5px 20px;background:rgba(212,175,55,.05);border-top:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;}
+.iitem{display:flex;align-items:center;gap:5px;font-size:8.5px;color:var(--muted);white-space:nowrap;}
+.idot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.iitem strong{color:var(--text);}
+/* RESPONSIVE */
+@media(max-width:700px){
+  .shell{aspect-ratio:unset;min-height:unset;height:100dvh;}
+  .hdr{flex-direction:column;align-items:stretch;}
+  .hdr-trophy{width:100%;height:38px;border-right:none;border-bottom:1px solid rgba(212,175,55,.18);}
+  .hdr-title-block{border-right:none;border-bottom:1px solid rgba(255,255,255,.06);padding:8px 14px;}
+  .hdr-big{font-size:20px;}
+  .hdr-kor{font-size:13px;}
+  .hdr-info{padding:8px 14px;}
+  .pill{font-size:9px;padding:3px 8px;}
+  
+  .group-layout{flex-direction:column;}
+  .date-sidebar{width:100%;height:auto;border-right:none;border-bottom:1px solid rgba(255,255,255,.06);overflow-y:hidden;overflow-x:auto;display:flex;flex-direction:row;padding:6px 8px;gap:5px;}
+  .dsb-lbl{display:none;}
+  .date-btn{flex-shrink:0;width:auto;margin-bottom:0;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;}
+  .d-info{align-items:center;}
+  .d-dot{display:none;}
+  .match-row{min-height:auto;}
+  .m-time{width:66px;padding:0 6px;}
+  .m-kst{font-size:15px;}
+  .m-grp{width:32px;}
+  .m-flag{font-size:20px;}
+  .m-name{font-size:11px;}
+  .m-rank,.m-hist{font-size:7px;}
+  .m-vs{width:32px;font-size:15px;}
+  .m-venue{width:100px;padding:0 7px;}
+  .v-city{font-size:8.5px;}.v-stadium,.v-click{font-size:6.5px;}
+  .pred-box{padding:16px 14px 14px;}
+  .pred-stats{grid-template-columns:1fr;}
+  .players-grid{grid-template-columns:1fr;}
+  .ko-venue{display:none;}
+}
+@media(max-width:480px){
+  .hdr-big{font-size:18px;}
+  .m-venue{display:none;}
+  .m-hist{display:none;}
+}
+
+/* 완료 경기 */
+.match-row.done { opacity:1; }
+.match-row.done .m-name { color:var(--gold); font-weight:900; }
+.match-row.done .m-vs { color:rgba(255,255,255,.08); }
+.match-row.done { border-color:rgba(212,175,55,.3); }
+.match-row.done.kor { border-color:rgba(239,68,68,.5); }
+.match-row.done .m-accent { background:linear-gradient(180deg,rgba(212,175,55,.6),transparent); }
+.match-row.done.kor .m-accent { background:linear-gradient(180deg,rgba(239,68,68,.7),transparent); }
+
+/* 스코어 표시 */
+.m-score-wrap {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:70px; flex-shrink:0;
+  gap:2px;
+}
+.m-score-nums {
+  display:flex; align-items:center; gap:4px;
+  font-family:'Bebas Neue',cursive; font-size:22px; line-height:1;
+}
+.m-score-h { color:var(--gold); }
+.m-score-a { color:var(--gold); }
+.m-score-sep { color:var(--muted); font-size:16px; }
+.m-score-win { color:var(--green); }
+.m-score-lose { color:var(--muted); }
+.m-score-draw { color:var(--gold); }
+.m-ft-lbl {
+  font-size:7px; font-weight:700; color:var(--green);
+  letter-spacing:1px; padding:1px 5px; border-radius:4px;
+  background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.25);
+}
+
+/* PWA 전체화면 모드 */
+@media all and (display-mode: standalone) {
+  .shell { aspect-ratio: unset; height: 100dvh; min-height: unset; }
+}
+/* iOS Safari 홈화면 앱 */
+@media (max-height: 700px) and (orientation: landscape) {
+  .shell { aspect-ratio: unset; height: 100dvh; min-height: unset; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="hdr">
+  <div class="hdr-trophy">🏆</div>
+  <div class="hdr-title-block">
+    <div class="hdr-en">FIFA WORLD CUP 2026 &middot; 23RD EDITION</div>
+    <div class="hdr-big">2026 <em>FIFA</em> WORLD CUP</div>
+    <div class="hdr-kor">한국 중계 <em>시간표</em></div>
+  </div>
+  <div class="hdr-info">
+    <div class="pill-row">
+      <span class="pill"><img src="https://cdn.jsdelivr.net/npm/twemoji@14/assets/svg/1f1e8-1f1e6.svg" class="fi" style="height:1.1em;width:auto;vertical-align:-0.15em;display:inline-block"> 캐나다 &middot; <img src="https://cdn.jsdelivr.net/npm/twemoji@14/assets/svg/1f1f2-1f1fd.svg" class="fi" style="height:1.1em;width:auto;vertical-align:-0.15em;display:inline-block"> 멕시코 &middot; <img src="https://cdn.jsdelivr.net/npm/twemoji@14/assets/svg/1f1fa-1f1f8.svg" class="fi" style="height:1.1em;width:auto;vertical-align:-0.15em;display:inline-block"> 미국 공동 개최</span>
+      <span class="pill bl">📅 6/12(금) ~ 7/20(일) KST 기준</span>
+      <span class="pill rd"><img src="https://cdn.jsdelivr.net/npm/twemoji@14/assets/svg/1f1f0-1f1f7.svg" class="fi" style="height:1.1em;width:auto;vertical-align:-0.15em;display:inline-block"> 한국 A조 출전 &middot; FIFA 23위</span>
+    </div>
+    <div class="hdr-desc">⚽ 48개국 &middot; 104경기 &middot; 역대 최대 규모 &nbsp;|&nbsp; 🏆 디펜딩 챔피언 <img src="https://cdn.jsdelivr.net/npm/twemoji@14/assets/svg/1f1e6-1f1f7.svg" class="fi" style="height:1.1em;width:auto;vertical-align:-0.15em;display:inline-block"> 아르헨티나 (FIFA 1위) &nbsp;|&nbsp; 👆 경기 클릭 시 승부 예측 + 주요 선수 정보</div>
+  </div>
+</div>
+<div class="stage-bar">
+  <button class="stab on" onclick="showStage('group')">⚽ 조별 리그</button>
+  <button class="stab" onclick="showStage('r32')">🔥 32강</button>
+  <button class="stab" onclick="showStage('r16')">⚡ 16강</button>
+  <button class="stab" onclick="showStage('qf')">🌟 8강</button>
+  <button class="stab" onclick="showStage('sf')">🥊 4강</button>
+  <button class="stab" onclick="showStage('final')">🏆 결승</button>
+</div>
+
+<div class="body">
+  <div class="stage-panel on" id="panel-group">
+    <div class="group-layout">
+      <div class="date-sidebar" id="date-sidebar"></div>
+      <div class="match-panel" id="match-panel"></div>
+    </div>
+  </div>
+  <div class="stage-panel" id="panel-r32"><div class="ko-layout" id="ko-r32"></div></div>
+  <div class="stage-panel" id="panel-r16"><div class="ko-layout" id="ko-r16"></div></div>
+  <div class="stage-panel" id="panel-qf"><div class="ko-layout" id="ko-qf"></div></div>
+  <div class="stage-panel" id="panel-sf"><div class="ko-layout" id="ko-sf"></div></div>
+  <div class="stage-panel" id="panel-final"><div class="ko-layout" id="ko-final"></div></div>
+</div>
+<div class="info-bar">
+  <div class="iitem"><div class="idot" style="background:var(--red)"></div> <strong>빨간 테두리</strong> = 한국 경기</div>
+  <div class="iitem"><div class="idot" style="background:var(--gold)"></div> 조별리그 <strong>6/12 ~ 6/28 KST</strong></div>
+  <div class="iitem"><div class="idot" style="background:var(--blue)"></div> <strong>48개국 · 104경기</strong></div>
+  <div class="iitem" style="margin-left:auto"><strong>👆 경기 카드 클릭 → 승부 예측 + 주요 선수</strong></div>
+</div>
+</div>
+<div class="pred-overlay" id="pred-overlay" onclick="closeOnBg(event)">
+  <div class="pred-box" id="pred-box"></div>
+</div>
+<button class="ext-close" id="ext-close" onclick="closePred()">✕</button>
+<div class="tap-hint" id="tap-hint">바깥 영역 탭 또는 ✕ 버튼으로 닫기</div>
+</div>
+<script>
+
+
+
+
+
+
+// 국기 유니코드 이모지 직접 생성 (CDN 불필요, 모든 기기에서 안전)
+var FLAG_EMOJI = {
+  MEX:'\uD83C\uDDF2\uD83C\uDDFD',RSA:'\uD83C\uDDFF\uD83C\uDDE6',KOR:'\uD83C\uDDF0\uD83C\uDDF7',
+  CZE:'\uD83C\uDDE8\uD83C\uDDFF',CAN:'\uD83C\uDDE8\uD83C\uDDE6',BIH:'\uD83C\uDDE7\uD83C\uDDE6',
+  QAT:'\uD83C\uDDF6\uD83C\uDDE6',SUI:'\uD83C\uDDE8\uD83C\uDDED',BRA:'\uD83C\uDDE7\uD83C\uDDF7',
+  MAR:'\uD83C\uDDF2\uD83C\uDDE6',HAI:'\uD83C\uDDED\uD83C\uDDF9',SCO:'\uD83C\uDFF4',
+  USA:'\uD83C\uDDFA\uD83C\uDDF8',PAR:'\uD83C\uDDF5\uD83C\uDDFE',AUS:'\uD83C\uDDE6\uD83C\uDDFA',
+  TUR:'\uD83C\uDDF9\uD83C\uDDF7',GER:'\uD83C\uDDE9\uD83C\uDDEA',CUW:'\uD83C\uDDE8\uD83C\uDDFC',
+  CIV:'\uD83C\uDDE8\uD83C\uDDEE',ECU:'\uD83C\uDDEA\uD83C\uDDE8',NED:'\uD83C\uDDF3\uD83C\uDDF1',
+  JPN:'\uD83C\uDDEF\uD83C\uDDF5',SWE:'\uD83C\uDDF8\uD83C\uDDEA',TUN:'\uD83C\uDDF9\uD83C\uDDF3',
+  BEL:'\uD83C\uDDE7\uD83C\uDDEA',EGY:'\uD83C\uDDEA\uD83C\uDDEC',IRN:'\uD83C\uDDEE\uD83C\uDDF7',
+  NZL:'\uD83C\uDDF3\uD83C\uDDFF',ESP:'\uD83C\uDDEA\uD83C\uDDF8',CPV:'\uD83C\uDDE8\uD83C\uDDFB',
+  KSA:'\uD83C\uDDF8\uD83C\uDDE6',URU:'\uD83C\uDDFA\uD83C\uDDFE',FRA:'\uD83C\uDDEB\uD83C\uDDF7',
+  SEN:'\uD83C\uDDF8\uD83C\uDDF3',IRQ:'\uD83C\uDDEE\uD83C\uDDF6',NOR:'\uD83C\uDDF3\uD83C\uDDF4',
+  ARG:'\uD83C\uDDE6\uD83C\uDDF7',ALG:'\uD83C\uDDE9\uD83C\uDDFF',AUT:'\uD83C\uDDE6\uD83C\uDDF9',
+  JOR:'\uD83C\uDDEF\uD83C\uDDF4',POR:'\uD83C\uDDF5\uD83C\uDDF9',COD:'\uD83C\uDDE8\uD83C\uDDE9',
+  UZB:'\uD83C\uDDFA\uD83C\uDDFF',COL:'\uD83C\uDDE8\uD83C\uDDF4',ENG:'\uD83C\uDFF4',
+  CRO:'\uD83C\uDDED\uD83C\uDDF7',GHA:'\uD83C\uDDEC\uD83C\uDDED',PAN:'\uD83C\uDDF5\uD83C\uDDE6'
+};
+
+function flagImg(code, sz) {
+  sz = sz || '1.4em';
+  var em = FLAG_EMOJI[code] || '\uD83C\uDFF3';
+  return '<span style="font-size:' + sz + ';line-height:1;vertical-align:-0.15em;display:inline-block">' + em + '</span>';
+}
+
+var T = {
+  MEX:['MEX','멕시코',15,17,'8강',14,26,11,56,98],
+  RSA:['RSA','남아공',69,3,'조별리그',3,4,3,9,17],
+  KOR:['KOR','한국',23,11,'4강(2002)',9,17,8,36,61],
+  CZE:['CZE','체코',40,10,'준우승(1934)',4,10,2,22,40],
+  CAN:['CAN','캐나다',30,2,'조별리그',0,3,0,1,5],
+  BIH:['BIH','보스니아',57,1,'조별리그',0,2,1,4,7],
+  QAT:['QAT','카타르',58,2,'조별리그',0,5,0,3,14],
+  SUI:['SUI','스위스',19,12,'8강(2022)',17,23,14,65,72],
+  BRA:['BRA','브라질',6,22,'우승 5회',73,18,22,237,101],
+  MAR:['MAR','모로코',14,7,'4강(2022)',6,8,7,25,30],
+  HAI:['HAI','아이티',89,1,'조별리그',0,3,0,2,14],
+  SCO:['SCO','스코틀랜드',39,8,'16강 최고',4,16,7,25,41],
+  USA:['USA','미국',16,11,'4강(1930)',11,21,7,69,87],
+  PAR:['PAR','파라과이',66,8,'8강 최고',5,11,9,26,37],
+  AUS:['AUS','호주',25,6,'16강(2022)',8,14,4,39,57],
+  TUR:['TUR','튀르키예',28,5,'3위(2002)',12,10,5,43,38],
+  GER:['GER','독일',10,20,'우승 4회',67,20,19,226,125],
+  CUW:['CUW','퀴라소',82,0,'첫 출전',0,0,0,0,0],
+  CIV:['CIV','코트디부아르',53,4,'조별리그',2,8,2,7,24],
+  ECU:['ECU','에콰도르',44,4,'16강 최고',4,8,2,14,23],
+  NED:['NED','네덜란드',7,11,'준우승 3회',27,14,12,93,56],
+  JPN:['JPN','일본',18,8,'16강 최고',12,13,5,37,44],
+  SWE:['SWE','스웨덴',35,12,'준우승(1958)',11,17,8,57,57],
+  TUN:['TUN','튀니지',48,6,'조별리그',1,11,3,6,22],
+  BEL:['BEL','벨기에',9,14,'3위(2018)',13,18,9,56,60],
+  EGY:['EGY','이집트',46,4,'8강 최고',4,9,4,16,30],
+  IRN:['IRN','이란',24,6,'조별리그',2,11,1,9,28],
+  NZL:['NZL','뉴질랜드',99,3,'조별리그',0,7,2,4,22],
+  ESP:['ESP','스페인',2,16,'우승(2010)',61,19,17,204,89],
+  CPV:['CPV','카보베르데',77,0,'첫 출전',0,0,0,0,0],
+  KSA:['KSA','사우디',55,6,'16강(2022)',5,13,2,21,37],
+  URU:['URU','우루과이',17,14,'우승 2회',47,19,17,169,88],
+  FRA:['FRA','프랑스',3,16,'우승 2회',66,21,19,226,113],
+  SEN:['SEN','세네갈',20,4,'8강(2022)',5,5,5,16,20],
+  IRQ:['IRQ','이라크',72,4,'조별리그',1,9,2,6,27],
+  NOR:['NOR','노르웨이',34,5,'준결승(1958)',2,5,2,7,16],
+  ARG:['ARG','아르헨티나',1,18,'우승 3회',47,21,13,145,84],
+  ALG:['ALG','알제리',43,5,'8강(1982)',5,12,5,20,31],
+  AUT:['AUT','오스트리아',26,7,'3위(1954)',12,18,8,43,58],
+  JOR:['JOR','요르단',63,0,'첫 출전',0,0,0,0,0],
+  POR:['POR','포르투갈',5,8,'3위(1966)',17,11,6,62,40],
+  COD:['COD','콩고DR',79,2,'조별리그',2,3,1,5,13],
+  UZB:['UZB','우즈베키스탄',71,0,'첫 출전',0,0,0,0,0],
+  COL:['COL','콜롬비아',13,6,'8강(2014)',9,9,4,32,28],
+  ENG:['ENG','잉글랜드',4,16,'우승(1966)',28,15,13,79,53],
+  CRO:['CRO','크로아티아',11,7,'준우승(2018)',16,9,10,44,32],
+  GHA:['GHA','가나',60,4,'8강(2010)',4,7,4,14,28],
+  PAN:['PAN','파나마',78,2,'조별리그',0,5,0,2,16]
+};
+
+// PLAYERS [emoji, name, age, position, club, achievement, comment]
+var P = {
+  MEX:[
+    ['⚡','에�토르 에레라',34,'MF','LA Galaxy','FIFA 2회 출전','멕시코의 중원 사령관. 정확한 패스와 경험이 풍부한 미드필더'],
+    ['🎯','산티아고 히메네스',23,'FW','AC 밀란','세리에A 득점왕 경쟁','AC 밀란의 핵심 공격수. 유럽 무대에서 빠르게 성장 중']
+  ],
+  RSA:[
+    ['🌟','퍼시 타우',30,'FW','카이로 시티','AFCON 2021 우승','남아공 최고의 공격수. 드리블과 결정력이 뛰어남'],
+    ['🛡️','론원도 모코에나',25,'DF','마멜로디 선다운즈','프리미어Soccer 리그 최고수비','위기 상황에서 팀을 지키는 수비의 핵심']
+  ],
+  KOR:[
+    ['⭐','손흥민',33,'FW','토트넘','EPL 득점왕(2021-22)','한국 역대 최고 선수. 월드클래스 드리블과 양발 슈팅 보유'],
+    ['🎯','이강인',23,'MF','PSG','UEFA 유로파 준우승 경험','PSG의 핵심 미드필더. 창의적 패스와 드리블로 경기를 지배']
+  ],
+  CZE:[
+    ['🌟','파트리크 실라흐',28,'FW','레버쿠젠','분데스리가 우승(2023-24)','뛰어난 피지컬과 득점 감각을 지닌 공격수'],
+    ['🛡️','토마스 수첵',29,'MF','웨스트햄','U-21 유로 우승','탄탄한 수비형 미드필더. 공수 전환에 뛰어남']
+  ],
+  CAN:[
+    ['⚡','알폰소 데이비스',24,'DF','바이에른 뮌헨','UEFA 챔피언스리그 우승','세계 최정상 레프트백. 폭발적인 스피드와 공격 가담'],
+    ['🎯','조나단 데이비드',24,'FW','리버풀','리그 1 득점왕','캐나다 역대 최고 공격수. 리버풀의 핵심 스트라이커']
+  ],
+  BIH:[
+    ['🌟','에딘 제코',38,'FW','페네르바체','세리에A 우승 1회','보스니아 전설. 경험과 기술을 겸비한 노련한 공격수'],
+    ['🛡️','사이드 코라치치',33,'MF','페네르바체','분데스리가 경험','중원을 지배하는 정확한 패스와 넓은 시야를 보유']
+  ],
+  QAT:[
+    ['🌟','악람 아피프',28,'FW','알사드','아시안컵 2023 득점왕','카타르의 에이스. 드리블과 스피드로 상대 수비를 농락'],
+    ['🛡️','부알렘 후와리',24,'DF','알사드','아시안컵 2023 우승','카타르 수비의 중심. 차분한 볼 처리와 강한 마크능력']
+  ],
+  SUI:[
+    ['⭐','그라니트 샤카',32,'MF','선더랜드','유로 2020 8강','스위스의 주장. 투쟁심과 정확한 중장거리 슈팅이 특기'],
+    ['🎯','브렐 엠볼로',27,'FW','모나코','월드컵 조별리그 골','피지컬과 스피드를 갖춘 전방 공격수']
+  ],
+  BRA:[
+    ['🌟','비니시우스 주니오르',24,'FW','레알 마드리드','UEFA 챔피언스리그 우승 2회','레알의 에이스. 드리블과 스피드로 세계 최고 수준의 공격수'],
+    ['🎯','호드리고',23,'FW','레알 마드리드','챔피언스리그 결승골','결정적인 순간에 빛나는 레알 마드리드의 핵심 공격수']
+  ],
+  MAR:[
+    ['⭐','아쉬라프 하키미',25,'DF','PSG','월드컵 4강(2022)','세계 최고 레프트백 중 한 명. 공격적인 오버래핑이 특기'],
+    ['🎯','소피안 암라바트',28,'MF','피오렌티나','2022 월드컵 4강의 주역','수비형 미드필더로 팀의 균형을 잡는 핵심 미드필더']
+  ],
+  HAI:[
+    ['🌟','데릭 에티엔 주니오르',26,'FW','토론토 FC','카리브해 컵 우승','아이티의 에이스 공격수. 스피드와 드리블이 뛰어남'],
+    ['🛡️','케르브엥스 앙투안',25,'MF','임팩트 몬트리올','CONCACAF 네이션스리그 경험','아이티 중원의 핵심. 활동량과 압박이 강점']
+  ],
+  SCO:[
+    ['🌟','앤드류 로버트슨',30,'DF','리버풀','챔피언스리그 우승(2019)','세계 최정상 레프트백. 리버풀의 핵심 수비수'],
+    ['⭐','스콧 맥토미나이',27,'MF','나폴리','세리에A 출전','팀을 위해 헌신하는 투쟁적인 미드필더']
+  ],
+  USA:[
+    ['🌟','크리스티안 풀리식',26,'FW','AC 밀란','챔피언스리그 경험','미국 최고의 선수. AC 밀란에서 뛰어난 활약 중'],
+    ['🛡️','웨스턴 맥케니',26,'MF','유벤투스','세리에A 경험','에너지 넘치는 박스투박스 미드필더']
+  ],
+  PAR:[
+    ['🌟','미겔 아유소',22,'FW','AS 로마','세리에A 경험','파라과이의 차세대 에이스. 빠른 돌파와 득점력 보유'],
+    ['🛡️','로베르토 페레이라',29,'DF','파라과이 대표팀','CONMEBOL 경험','파라과이 수비의 기둥. 강력한 제공권과 위치 선정']
+  ],
+  AUS:[
+    ['⭐','매티 라이언',32,'GK','코펜하겐','월드컵 16강(2022)','호주의 주장. 뛰어난 선방 능력과 리더십'],
+    ['🌟','미치 듀크',33,'FW','사간 도스','월드컵 16강 득점','피지컬 강한 타겟형 공격수. 공중볼 경합에 뛰어남']
+  ],
+  TUR:[
+    ['⭐','할루크 아이한',29,'MF','레알 마드리드','챔피언스리그 우승','터키 역대 최고 선수. 레알 마드리드의 핵심 미드필더'],
+    ['🌟','아르다 귈러',20,'MF','레알 마드리드','챔피언스리그 경험','차세대 슈퍼스타. 기술적으로 완성된 천재형 미드필더']
+  ],
+  GER:[
+    ['⭐','야말 뮬러',27,'FW','바이에른 뮌헨','분데스리가 12회 우승','분데스리가 최고 공격수. 뛰어난 결정력과 팀플레이'],
+    ['🌟','플로리안 비르츠',22,'MF','바이에른 뮌헨','분데스리가 우승(2023-24)','독일의 차세대 에이스. 놀라운 드리블과 창의력']
+  ],
+  CUW:[
+    ['🌟','케보나 파이퍼',27,'MF','ADO 덴 하그','CONCACAF 리그 경험','퀴라소 최고의 미드필더. 정확한 패스와 넓은 시야'],
+    ['🛡️','더렉 보겔',25,'DF','스파르타 로테르담','네덜란드 리그 경험','수비의 핵심. 강한 마크와 제공권 장악력']
+  ],
+  CIV:[
+    ['⭐','세바스티앙 알레르',33,'FW','레알 마드리드','챔피언스리그 우승','코트디부아르의 에이스. 레알 마드리드에서 활약 중'],
+    ['🌟','사이몬 아디앙그',27,'FW','크리스털 팰리스','AFCON 경험','스피드와 드리블로 상대 수비를 압박하는 공격수']
+  ],
+  ECU:[
+    ['⭐','에네르 발렌시아',33,'FW','에인트호번','월드컵 16강 경험','에콰도르의 전통적인 타겟형 공격수. 제공권이 강점'],
+    ['🌟','모이세스 카이세도',22,'MF','첼시','EPL 경험','첼시의 핵심 수비형 미드필더. 볼 탈취와 배급이 뛰어남']
+  ],
+  NED:[
+    ['⭐','버질 판다이크',33,'DF','리버풀','챔피언스리그 우승(2019)','세계 최고의 센터백. 공중볼과 지상전 모두 탁월'],
+    ['🌟','코디 가크포',25,'FW','리버풀','월드컵 8강 득점','리버풀의 핵심 공격수. 다재다능하고 결정력이 뛰어남']
+  ],
+  JPN:[
+    ['⭐','쿠보 타케후사',23,'FW','레알 소시에다드','라리가 경험','일본의 에이스. 레알 소시에다드에서 맹활약 중인 기술형 공격수'],
+    ['🌟','엔도 와타루',31,'MF','리버풀','EPL 정규 주전','리버풀의 수비형 미드필더. 투쟁심과 볼 탈취가 특기']
+  ],
+  SWE:[
+    ['⭐','알렉산더 이삭',25,'FW','뉴캐슬','프리미어리그 득점권','전문적인 드리블러. 뉴캐슬의 에이스 공격수'],
+    ['🌟','빅토르 린델로프',29,'DF','맨유','유럽 챔피언스리그 경험','스웨덴 수비의 중심. 맨유에서 꾸준히 활약 중']
+  ],
+  TUN:[
+    ['🌟','엘리에스 스키리',30,'MF','하노버 96','아프리카 리그 경험','튀니지의 창의적 플레이메이커. 세트피스 키커'],
+    ['🛡️','아이우브 엘 카비',28,'FW','AS 파레',
+     '아프리카 경험','튀니지 최고의 공격수. 피지컬과 스피드를 겸비']
+  ],
+  BEL:[
+    ['⭐','케빈 더 브라위너',33,'MF','맨체스터 시티','EPL 우승 4회, 챔피언스리그 우승','세계 최고 미드필더 중 한 명. 정확한 패스와 중거리 슈팅'],
+    ['🌟','로메루 루카쿠',31,'FW','나폴리','세리에A 경험','벨기에의 에이스 공격수. 강력한 피지컬과 득점력']
+  ],
+  EGY:[
+    ['⭐','모하메드 살라',32,'FW','알나스르','챔피언스리그 우승(2019)','이집트의 전설. 한때 세계 최고였던 윙포워드'],
+    ['🌟','오마르 마르모우시',25,'FW','맨체스터 시티','EPL 경험','맨시티의 신예 공격수. 스피드와 적응력이 강점']
+  ],
+  IRN:[
+    ['⭐','메흐디 타레미',32,'FW','인터 밀란','세리에A 경험','이란의 에이스. 인터 밀란에서 활약 중인 공격수'],
+    ['🌟','알리레자 자한박시',30,'FW','스포르팅 CP','포르투갈 리그 우승','빠른 스피드와 기술적인 드리블로 측면을 지배']
+  ],
+  NZL:[
+    ['🌟','크리스 우드',32,'FW','노팅엄 포레스트','EPL 경험','뉴질랜드 역대 최다 득점자. 공중볼이 특기'],
+    ['🛡️','클레이튼 루이스',28,'MF','버밍엄 시티','웰링턴 피닉스 출신','뉴질랜드 중원의 핵심. 넓은 활동량과 투쟁심']
+  ],
+  ESP:[
+    ['⭐','라민 야말',18,'FW','바르셀로나','유로 2024 우승, 대회 MVP','역대 최연소 유로 우승. 바르셀로나의 차세대 슈퍼스타'],
+    ['🌟','페드리',22,'MF','바르셀로나','유로 2024 우승','바르셀로나의 미래. 뛰어난 볼 컨트롤과 게임 운영']
+  ],
+  CPV:[
+    ['🌟','리비오 카르발류',21,'MF','풀럼','EPL 경험','카보베르데의 차세대 스타. 포르투갈 출신으로 기술적으로 완성'],
+    ['🛡️','가르시아 포르투',27,'DF','스포르팅 CP','포르투갈 리그 경험','수비형 플레이어. 카보베르데 수비의 핵심']
+  ],
+  KSA:[
+    ['🌟','살렘 알다우사리',31,'FW','알힐랄','아르헨티나 상대 월드컵 골','사우디의 에이스. 드리블과 스피드로 경기를 주도'],
+    ['🛡️','모하메드 알브라이크',29,'DF','알힐랄','아시안컵 경험','사우디 수비의 중심. 기술적인 볼 처리와 강한 압박']
+  ],
+  URU:[
+    ['⭐','루이스 수아레스',37,'FW','나시오날','월드컵 4강 득점','우루과이의 레전드. 경험과 득점 본능이 뛰어난 노장'],
+    ['🌟','페데리코 발베르데',25,'MF','레알 마드리드','챔피언스리그 우승 2회','레알의 핵심. 박력 있는 돌진과 양발 슈팅이 특기']
+  ],
+  FRA:[
+    ['⭐','킬리안 음바페',26,'FW','레알 마드리드','월드컵 우승(2018)','현 세계 최고 선수 중 한 명. 폭발적 스피드와 결정력'],
+    ['🌟','오렐리앙 추아메니',25,'MF','레알 마드리드','챔피언스리그 우승','레알의 핵심 수비형 미드필더. 볼 탈취와 배급 능력 탁월']
+  ],
+  SEN:[
+    ['⭐','사디오 마네',32,'FW','알나스르','AFCON 우승(2022)','아프리카 최고의 선수 중 한 명. 스피드와 결정력이 특기'],
+    ['🌟','이드리사 게이','35','MF','알두하일','AFCON 우승','세네갈 중원의 핵심. 투쟁심과 볼 탈취 능력이 뛰어남']
+  ],
+  IRQ:[
+    ['🌟','아이먼 후세인',28,'FW','알코와','아시안컵 경험','이라크의 핵심 공격수. 결정력과 헤더가 강점'],
+    ['🛡️','알리 아드난',31,'DF','아르바일','이라크 주장','이라크 수비의 리더. 세트피스 득점력도 보유']
+  ],
+  NOR:[
+    ['⭐','어링 홀란드',24,'FW','맨체스터 시티','EPL 득점왕(역대급)','현 세계 최고 공격수. 놀라운 득점 능력과 피지컬'],
+    ['🌟','마틴 외데고르',26,'MF','아스날','EPL 우승 경쟁','아스날의 주장. 창의적인 패스와 게임 운영 능력']
+  ],
+  ARG:[
+    ['⭐','리오넬 메시',38,'FW','인터 마이애미','월드컵 우승(2022) · 발롱도르 8회','역대 최고의 축구선수. 이번이 마지막 월드컵일 가능성'],
+    ['🌟','훌리안 알바레스',24,'FW','아틀레티코 마드리드','월드컵 우승 · 챔피언스리그 우승','아르헨티나의 미래 에이스. 헌신적이고 다재다능한 공격수']
+  ],
+  ALG:[
+    ['🌟','리야드 마레스',33,'FW','알힐랄','AFCON 우승(2019)','알제리의 레전드. 드리블과 창의성이 뛰어난 윙어'],
+    ['⭐','아민 구이리',23,'FW','네덜란드 클럽 경험','유럽 무대 경험','차세대 알제리 에이스. 네덜란드에서 성장한 공격형 미드필더']
+  ],
+  AUT:[
+    ['⭐','마르코 아르나우토비치',35,'FW','인터 밀란','세리에A 우승','오스트리아의 레전드. 강한 피지컬과 경험이 풍부'],
+    ['🌟','콘라트 라이머',26,'MF','바이에른 뮌헨','분데스리가 우승','바이에른의 핵심 미드필더. 활동량과 기술이 탁월']
+  ],
+  JOR:[
+    ['🌟','야잔 알나이마트',24,'FW','알파이살리','요르단 리그 최다 득점','요르단의 에이스 공격수. 드리블과 슈팅이 강점'],
+    ['🛡️','발레리우스 자야드',27,'DF','알부카야','아시안컵 출전','요르단 수비의 중심. 강한 헤더와 위치 선정이 특기']
+  ],
+  POR:[
+    ['⭐','크리스티아누 호날두',41,'FW','알나스르','UEFA 챔피언스리그 5회 우승','역대 최고 선수 중 한 명. 이번이 진짜 마지막 월드컵'],
+    ['🌟','브루노 페르난데스',29,'MF','맨체스터 유나이티드','EPL 경험','포르투갈의 창의적 미드필더. 세트피스와 패스 능력 탁월']
+  ],
+  COD:[
+    ['🌟','세드리크 바켐부',30,'FW','레체','세리에A 경험','콩고의 에이스. 스피드와 드리블로 상대를 돌파'],
+    ['🛡️','아르투르 마수아쿠',33,'DF','마르세유','프랑스리그 경험','강인한 수비력과 경험을 바탕으로 팀의 수비를 이끎']
+  ],
+  UZB:[
+    ['🌟','압두코디르 후사노프',23,'DF','맨체스터 시티','EPL 경험','우즈베키스탄의 보석. 맨시티로 이적한 수비형 선수'],
+    ['⭐','오티르베크 지부',25,'MF','로코모티프 타슈켄트','아시아 경험','우즈베키스탄 중원의 핵심. 넓은 활동량과 패스가 강점']
+  ],
+  COL:[
+    ['⭐','루이스 디아스',27,'FW','리버풀','콜롬비아 최고 선수','리버풀의 핵심. 드리블과 스피드로 상대 수비를 위협'],
+    ['🌟','하메스 로드리게스',33,'MF','리가 콜롬비아','월드컵 2014 득점왕','콜롬비아의 레전드. 여전히 뛰어난 패스와 슈팅 능력']
+  ],
+  ENG:[
+    ['⭐','조드 벨링엄',21,'MF','레알 마드리드','챔피언스리그 우승','잉글랜드의 미래. 레알 마드리드에서 놀라운 활약 중'],
+    ['🌟','해리 케인',31,'FW','바이에른 뮌헨','EPL 역대 최다 득점','바이에른의 주포. 압도적인 득점력과 개인 기술']
+  ],
+  CRO:[
+    ['⭐','루카 모드리치',39,'MF','레알 마드리드','월드컵 준우승, 발롱도르','세계 최고 미드필더 중 한 명. 이번이 마지막 월드컵'],
+    ['🌟','이반 페리시치',35,'FW','하즈둑 스플리트','월드컵 결승골','크로아티아의 리더. 경험과 기술을 겸비한 왼쪽 윙어']
+  ],
+  GHA:[
+    ['🌟','조던 아예우',32,'FW','알카디시아','프리미어리그 경험','가나의 에이스. 스피드와 기술적인 드리블이 특기'],
+    ['🛡️','토마스 파티',30,'MF','아스날','EPL 경험','아스날의 수비형 미드필더. 볼 탈취 능력이 세계적']
+  ],
+  PAN:[
+    ['🌟','에드가르 바르세나스',28,'MF','올림피아','CONCACAF 경험','파나마의 창의적 플레이메이커. 세트피스가 특기'],
+    ['🛡️','카를로스 살세도',27,'DF','레온','리가 MX 경험','파나마 수비의 핵심. 강한 압박과 수비 조직력']
+  ]
+};
+
+// GROUP MATCHES [group, home, away, dateKey, KST, stadium, city, note]
+var GM = [
+  ['A','MEX','RSA','0612금','04:00','에스타디오 아스테카','멕시코시티','개막전'],
+  ['A','KOR','CZE','0612금','11:00','에스타디오 아크론','과달라하라','&#128308; 한국 1차전'],
+  ['B','CAN','BIH','0613토','04:00','BMO 필드','토론토',''],
+  ['D','USA','PAR','0613토','10:00','SoFi 스타디움','잉글우드',''],
+  ['B','QAT','SUI','0614일','04:00','리바이스 스타디움','산타클라라',''],
+  ['C','BRA','MAR','0614일','07:00','메트라이프 스타디움','뉴저지','&#11088; 빅매치'],
+  ['C','HAI','SCO','0614일','10:00','질레트 스타디움','폭스버러',''],
+  ['D','AUS','TUR','0614일','13:00','BC 플레이스','밴쿠버',''],
+  ['E','GER','CUW','0615월','02:00','NRG 스타디움','휴스턴',''],
+  ['F','NED','JPN','0615월','05:00','AT&T 스타디움','알링턴',''],
+  ['E','CIV','ECU','0615월','08:00','링컨파이낸셜 필드','필라델피아',''],
+  ['F','SWE','TUN','0615월','11:00','에스타디오 BBVA','몬테레이',''],
+  ['H','ESP','CPV','0616화','01:00','메르세데스벤츠 스타디움','애틀랜타',''],
+  ['G','BEL','EGY','0616화','04:00','루멘 필드','시애틀',''],
+  ['H','KSA','URU','0616화','07:00','하드록 스타디움','마이애미',''],
+  ['G','IRN','NZL','0616화','10:00','SoFi 스타디움','잉글우드',''],
+  ['I','FRA','SEN','0617수','04:00','메트라이프 스타디움','뉴저지','&#11088; 빅매치'],
+  ['I','IRQ','NOR','0617수','07:00','질레트 스타디움','폭스버러',''],
+  ['J','ARG','ALG','0617수','10:00','애로헤드 스타디움','캔자스시티','&#11088; 빅매치'],
+  ['J','AUT','JOR','0617수','13:00','리바이스 스타디움','산타클라라',''],
+  ['K','POR','COD','0618목','02:00','NRG 스타디움','휴스턴',''],
+  ['L','ENG','CRO','0618목','05:00','AT&T 스타디움','알링턴','&#11088; 빅매치'],
+  ['L','GHA','PAN','0618목','08:00','BMO 필드','토론토',''],
+  ['K','UZB','COL','0618목','11:00','에스타디오 아스테카','멕시코시티',''],
+  ['A','CZE','RSA','0619금','01:00','메르세데스벤츠 스타디움','애틀랜타',''],
+  ['B','SUI','BIH','0619금','04:00','SoFi 스타디움','잉글우드',''],
+  ['B','CAN','QAT','0619금','07:00','BC 플레이스','밴쿠버',''],
+  ['A','MEX','KOR','0619금','10:00','에스타디오 아크론','과달라하라','&#128308; 한국 2차전'],
+  ['D','USA','AUS','0620토','04:00','루멘 필드','시애틀',''],
+  ['C','SCO','MAR','0620토','07:00','질레트 스타디움','폭스버러',''],
+  ['C','BRA','HAI','0620토','09:30','링컨파이낸셜 필드','필라델피아',''],
+  ['D','TUR','PAR','0620토','12:00','리바이스 스타디움','산타클라라',''],
+  ['F','NED','SWE','0621일','02:00','NRG 스타디움','휴스턴',''],
+  ['E','GER','CIV','0621일','05:00','BMO 필드','토론토','&#11088; 빅매치'],
+  ['E','ECU','CUW','0621일','09:00','애로헤드 스타디움','캔자스시티',''],
+  ['F','TUN','JPN','0621일','13:00','에스타디오 BBVA','몬테레이',''],
+  ['H','ESP','KSA','0622월','01:00','메르세데스벤츠 스타디움','애틀랜타',''],
+  ['G','BEL','IRN','0622월','04:00','SoFi 스타디움','잉글우드',''],
+  ['H','URU','CPV','0622월','07:00','하드록 스타디움','마이애미',''],
+  ['G','NZL','EGY','0622월','10:00','BC 플레이스','밴쿠버',''],
+  ['J','ARG','AUT','0623화','02:00','AT&T 스타디움','알링턴',''],
+  ['I','FRA','IRQ','0623화','06:00','링컨파이낸셜 필드','필라델피아',''],
+  ['I','NOR','SEN','0623화','09:00','메트라이프 스타디움','뉴저지',''],
+  ['J','JOR','ALG','0623화','12:00','리바이스 스타디움','산타클라라',''],
+  ['K','POR','UZB','0624수','02:00','NRG 스타디움','휴스턴',''],
+  ['L','ENG','GHA','0624수','05:00','질레트 스타디움','폭스버러',''],
+  ['L','PAN','CRO','0624수','08:00','BMO 필드','토론토',''],
+  ['K','COL','COD','0624수','11:00','에스타디오 아크론','과달라하라',''],
+  ['B','SUI','CAN','0625목','04:00','BC 플레이스','밴쿠버','동시 킥오프'],
+  ['B','BIH','QAT','0625목','04:00','루멘 필드','시애틀','동시 킥오프'],
+  ['C','SCO','BRA','0625목','07:00','하드록 스타디움','마이애미','동시 킥오프'],
+  ['C','MAR','HAI','0625목','07:00','메르세데스벤츠 스타디움','애틀랜타','동시 킥오프'],
+  ['A','CZE','MEX','0625목','10:00','에스타디오 아스테카','멕시코시티','동시 킥오프'],
+  ['A','RSA','KOR','0625목','10:00','에스타디오 BBVA','몬테레이','&#128308; 한국 3차전'],
+  ['E','CUW','CIV','0626금','05:00','링컨파이낸셜 필드','필라델피아','동시 킥오프'],
+  ['E','ECU','GER','0626금','05:00','메트라이프 스타디움','뉴저지','동시 킥오프'],
+  ['F','JPN','SWE','0626금','08:00','AT&T 스타디움','알링턴','동시 킥오프'],
+  ['F','TUN','NED','0626금','08:00','애로헤드 스타디움','캔자스시티','동시 킥오프'],
+  ['D','TUR','USA','0626금','11:00','SoFi 스타디움','잉글우드','동시 킥오프'],
+  ['D','PAR','AUS','0626금','11:00','리바이스 스타디움','산타클라라','동시 킥오프'],
+  ['I','NOR','FRA','0627토','04:00','질레트 스타디움','폭스버러','동시 킥오프'],
+  ['I','SEN','IRQ','0627토','04:00','BMO 필드','토론토','동시 킥오프'],
+  ['H','CPV','KSA','0627토','09:00','NRG 스타디움','휴스턴','동시 킥오프'],
+  ['H','URU','ESP','0627토','09:00','에스타디오 아크론','과달라하라','동시 킥오프'],
+  ['G','EGY','IRN','0627토','12:00','루멘 필드','시애틀','동시 킥오프'],
+  ['G','NZL','BEL','0627토','12:00','BC 플레이스','밴쿠버','동시 킥오프'],
+  ['L','PAN','ENG','0628일','06:00','메트라이프 스타디움','뉴저지','동시 킥오프'],
+  ['L','CRO','GHA','0628일','06:00','링컨파이낸셜 필드','필라델피아','동시 킥오프'],
+  ['K','COL','POR','0628일','08:30','하드록 스타디움','마이애미','동시 킥오프'],
+  ['K','COD','UZB','0628일','08:30','메르세데스벤츠 스타디움','애틀랜타','동시 킥오프'],
+  ['J','ALG','AUT','0628일','11:00','애로헤드 스타디움','캔자스시티','동시 킥오프'],
+  ['J','JOR','ARG','0628일','11:00','AT&T 스타디움','알링턴','동시 킥오프']
+];
+
+var DATE_META = [
+  {k:'0612금',l:'6/12',d:'금',c:2,kor:true},
+  {k:'0613토',l:'6/13',d:'토',c:2,kor:false},
+  {k:'0614일',l:'6/14',d:'일',c:4,kor:false},
+  {k:'0615월',l:'6/15',d:'월',c:4,kor:false},
+  {k:'0616화',l:'6/16',d:'화',c:4,kor:false},
+  {k:'0617수',l:'6/17',d:'수',c:4,kor:false},
+  {k:'0618목',l:'6/18',d:'목',c:4,kor:false},
+  {k:'0619금',l:'6/19',d:'금',c:4,kor:true},
+  {k:'0620토',l:'6/20',d:'토',c:4,kor:false},
+  {k:'0621일',l:'6/21',d:'일',c:4,kor:false},
+  {k:'0622월',l:'6/22',d:'월',c:4,kor:false},
+  {k:'0623화',l:'6/23',d:'화',c:4,kor:false},
+  {k:'0624수',l:'6/24',d:'수',c:4,kor:false},
+  {k:'0625목',l:'6/25',d:'목',c:6,kor:true},
+  {k:'0626금',l:'6/26',d:'금',c:6,kor:false},
+  {k:'0627토',l:'6/27',d:'토',c:6,kor:false},
+  {k:'0628일',l:'6/28',d:'일',c:6,kor:false}
+];
+
+var KO_DATA = {
+  r32:[
+    {date:'6월 29일(일)',kst:'04:00',round:'32강',matchup:'A조 2위 vs B조 2위',venue:'SoFi 스타디움, LA'},
+    {date:'6월 30일(월)',kst:'02:00',round:'32강',matchup:'C조 1위 vs F조 2위',venue:'NRG 스타디움, 휴스턴'},
+    {date:'6월 30일(월)',kst:'05:30',round:'32강',matchup:'E조 1위 vs 3위팀',venue:'질레트 스타디움, 폭스버러'},
+    {date:'6월 30일(월)',kst:'10:00',round:'32강',matchup:'F조 1위 vs C조 2위',venue:'에스타디오 BBVA, 몬테레이'},
+    {date:'7월 1일(화)',kst:'02:00',round:'32강',matchup:'E조 2위 vs I조 2위',venue:'AT&T 스타디움, 알링턴'},
+    {date:'7월 1일(화)',kst:'06:00',round:'32강',matchup:'I조 1위 vs 3위팀',venue:'메트라이프 스타디움, NJ'},
+    {date:'7월 1일(화)',kst:'10:00',round:'32강',matchup:'A조 1위 vs 3위팀',venue:'에스타디오 아스테카, 멕시코시티'},
+    {date:'7월 2일(수)',kst:'01:00',round:'32강',matchup:'L조 1위 vs 3위팀',venue:'메르세데스벤츠 스타디움, 애틀랜타'},
+    {date:'7월 2일(수)',kst:'05:00',round:'32강',matchup:'G조 1위 vs 3위팀',venue:'루멘 필드, 시애틀'},
+    {date:'7월 2일(수)',kst:'09:00',round:'32강',matchup:'D조 1위 vs 3위팀',venue:'리바이스 스타디움, 산타클라라'},
+    {date:'7월 3일(목)',kst:'04:00',round:'32강',matchup:'H조 1위 vs J조 2위',venue:'SoFi 스타디움, LA'},
+    {date:'7월 3일(목)',kst:'08:00',round:'32강',matchup:'K조 2위 vs L조 2위',venue:'BMO 필드, 토론토'},
+    {date:'7월 4일(금)',kst:'00:00',round:'32강',matchup:'B조 1위 vs 3위팀',venue:'BC 플레이스, 밴쿠버'},
+    {date:'7월 4일(금)',kst:'03:00',round:'32강',matchup:'D조 2위 vs G조 2위',venue:'AT&T 스타디움, 알링턴'},
+    {date:'7월 4일(금)',kst:'07:00',round:'32강',matchup:'J조 1위 vs H조 2위',venue:'하드록 스타디움, 마이애미'},
+    {date:'7월 4일(금)',kst:'10:30',round:'32강',matchup:'K조 1위 vs 3위팀',venue:'애로헤드 스타디움, 캔자스시티'}
+  ],
+  r16:[
+    {date:'7월 5일(토)',kst:'02:00',round:'16강',matchup:'32강 M73승자 vs M75승자',venue:'NRG 스타디움, 휴스턴'},
+    {date:'7월 5일(토)',kst:'06:00',round:'16강',matchup:'32강 M74승자 vs M77승자',venue:'링컨파이낸셜 필드, 필라델피아'},
+    {date:'7월 6일(일)',kst:'05:00',round:'16강',matchup:'32강 M76승자 vs M78승자',venue:'메트라이프 스타디움, NJ'},
+    {date:'7월 6일(일)',kst:'09:00',round:'16강',matchup:'32강 M79승자 vs M80승자',venue:'AT&T 스타디움, 알링턴'},
+    {date:'7월 7일(월)',kst:'02:00',round:'16강',matchup:'32강 M81승자 vs M82승자',venue:'SoFi 스타디움, LA'},
+    {date:'7월 7일(월)',kst:'06:00',round:'16강',matchup:'32강 M83승자 vs M85승자',venue:'질레트 스타디움, 폭스버러'},
+    {date:'7월 8일(화)',kst:'02:00',round:'16강',matchup:'32강 M84승자 vs M86승자',venue:'BC 플레이스, 밴쿠버'},
+    {date:'7월 8일(화)',kst:'06:00',round:'16강',matchup:'32강 M87승자 vs M88승자',venue:'루멘 필드, 시애틀'}
+  ],
+  qf:[
+    {date:'7월 10일(목)',kst:'02:00',round:'8강',matchup:'16강 승자',venue:'NRG 스타디움, 휴스턴'},
+    {date:'7월 10일(목)',kst:'06:00',round:'8강',matchup:'16강 승자',venue:'SoFi 스타디움, LA'},
+    {date:'7월 11일(금)',kst:'02:00',round:'8강',matchup:'16강 승자',venue:'AT&T 스타디움, 알링턴'},
+    {date:'7월 12일(토)',kst:'04:00',round:'8강',matchup:'16강 승자',venue:'메트라이프 스타디움, NJ'}
+  ],
+  sf:[
+    {date:'7월 15일(화)',kst:'05:00',round:'준결승',matchup:'8강 승자',venue:'메트라이프 스타디움, NJ'},
+    {date:'7월 16일(수)',kst:'05:00',round:'준결승',matchup:'8강 승자',venue:'AT&T 스타디움, 알링턴'}
+  ],
+  final:[
+    {date:'7월 19일(토)',kst:'02:00',round:'3·4위전',matchup:'준결승 패자',venue:'하드록 스타디움, 마이애미',isFinal:false},
+    {date:'7월 20일(일)',kst:'04:00',round:'🏆 결 승',matchup:'결승 진출팀 확정 예정',venue:'뉴욕 뉴저지 스타디움, NJ',isFinal:true}
+  ]
+};
+
+// ── PREDICTION ENGINE
+function predict(hCode, aCode) {
+  var h = T[hCode], a = T[aCode];
+  if (!h || !a) return null;
+  var hRS = Math.max(0, 200 - h[2]), aRS = Math.max(0, 200 - a[2]);
+  var hG = h[5]+h[6]+h[7], aG = a[5]+a[6]+a[7];
+  var hWR = hG > 0 ? h[5]/hG : 0.1, aWR = aG > 0 ? a[5]/aG : 0.1;
+  var hAvgG = hG > 0 ? h[8]/hG : 0.8, aAvgG = aG > 0 ? a[8]/aG : 0.8;
+  var hAvgC = hG > 0 ? h[9]/hG : 1.2, aAvgC = aG > 0 ? a[9]/aG : 1.2;
+  var hStr = (hRS*0.5 + hWR*100*0.3 + hAvgG*10*0.2)/100;
+  var aStr = (aRS*0.5 + aWR*100*0.3 + aAvgG*10*0.2)/100;
+  var tot = hStr + aStr || 1;
+  var hP = hStr/tot, aP = aStr/tot;
+  var gap = Math.abs(hP - aP);
+  var drawP = Math.max(0.15, 0.35 - gap*0.8);
+  hP *= (1-drawP); aP *= (1-drawP);
+  var hWin = Math.round(hP*100), aWin = Math.round(aP*100), draw = 100-hWin-aWin;
+  var hGoals = (hAvgG*0.6 + aAvgC*0.4)*0.9, aGoals = (aAvgG*0.6 + hAvgC*0.4)*0.9;
+  if (hWin > aWin) hGoals *= 1.1; else if (aWin > hWin) aGoals *= 1.1;
+  if (h[3]===0){hGoals*=0.5; aGoals*=1.2;} if (a[3]===0){aGoals*=0.5; hGoals*=1.2;}
+  hGoals = Math.max(0, Math.round(hGoals)); aGoals = Math.max(0, Math.round(aGoals));
+  if (hGoals===aGoals && draw<30){ if(hWin>aWin) hGoals++; else aGoals++; }
+  var winner, winnerName;
+  if (hWin>aWin && hWin>draw){winner='home'; winnerName=h[1];}
+  else if (aWin>hWin && aWin>draw){winner='away'; winnerName=a[1];}
+  else {winner='draw'; winnerName='무승부';}
+  return {h:h, a:a, hWin:hWin, aWin:aWin, draw:draw, hGoals:hGoals, aGoals:aGoals, winner:winner, winnerName:winnerName, hG:hG, aG:aG};
+}
+
+function showPlayers(code, side) {
+  var btns = document.querySelectorAll('.player-toggle-btn');
+  var secs = document.querySelectorAll('.player-section');
+  secs.forEach(function(s){ s.classList.remove('show'); });
+  btns.forEach(function(b){ b.classList.remove('on'); });
+  var sec = document.getElementById('players-' + side);
+  var btn = document.getElementById('pbtn-' + side);
+  if (sec && btn) { sec.classList.add('show'); btn.classList.add('on'); }
+}
+
+function buildPlayerSection(code, side) {
+  var players = P[code];
+  if (!players || !players.length) return '';
+  var t = T[code];
+  var html = '';
+  html += '<div class="player-section" id="players-' + side + '">';
+  html += '<div class="player-section-title">' + flagImg(code,'1em') + ' ' + t[1] + ' 주요 선수</div>';
+  html += '<div class="players-grid">';
+  for (var i = 0; i < players.length; i++) {
+    var pl = players[i];
+    html += '<div class="player-card">';
+    html += '<div class="player-photo">' + pl[0] + '</div>';
+    html += '<div class="player-body">';
+    html += '<div class="player-name">' + pl[1] + '</div>';
+    html += '<span class="player-pos">' + pl[3] + '</span>';
+    html += '<div class="player-row"><span class="player-key">나이</span><span class="player-val">' + pl[2] + '세</span></div>';
+    html += '<div class="player-row"><span class="player-key">소속</span><span class="player-val">' + pl[4] + '</span></div>';
+    html += '<div class="player-row"><span class="player-key">최대성적</span><span class="player-val">' + pl[5] + '</span></div>';
+    html += '<div class="player-comment">' + pl[6] + '</div>';
+    html += '</div></div>';
+  }
+  html += '</div></div>';
+  return html;
+}
+
+function openPred(idx) {
+  var m = GM[idx];
+  var grp=m[0], hc=m[1], ac=m[2], dk=m[3], kst=m[4], stadium=m[5], city=m[6];
+  var p = predict(hc, ac);
+  if (!p) return;
+  var h=p.h, a=p.a, hWin=p.hWin, aWin=p.aWin, draw=p.draw;
+  var hGoals=p.hGoals, aGoals=p.aGoals, winner=p.winner, hG=p.hG, aG=p.aG;
+  var wc = winner==='home' ? 'var(--blue)' : winner==='away' ? 'var(--red)' : 'var(--gold)';
+  var wl = winner==='home' ? h[1]+' 승리 예상' : winner==='away' ? a[1]+' 승리 예상' : '무승부 예상';
+  var hRC = h[2]<a[2] ? 'hi' : 'lo', aRC = a[2]<h[2] ? 'hi' : 'lo';
+  var hCol = winner==='home' ? 'var(--green)' : 'var(--text)';
+  var aCol = winner==='away' ? 'var(--green)' : 'var(--text)';
+  var html = '';
+  html += '<button class="pred-close" onclick="closePred()">✕</button>';
+  html += '<div class="pred-hdr"><div class="pred-tag">&#9917; '+grp+'조 &middot; 승부 예측 분석</div>';
+  html += '<div class="pred-date">'+dk+' &middot; '+kst+' KST &middot; '+stadium+', '+city+'</div></div>';
+  html += '<div class="pred-mu">';
+  html += '<div class="pred-side"><div class="pred-flag">'+flagImg(hc,'2.2em')+'</div><div class="pred-tname">'+h[1]+'</div><div class="pred-rank">FIFA '+h[2]+'위</div><div class="pred-hist-s">'+h[4]+' &middot; '+h[3]+'회 출전</div></div>';
+  html += '<div class="pred-mid"><div class="pred-vs">VS</div><div class="pred-grplbl">'+grp+'조</div></div>';
+  html += '<div class="pred-side"><div class="pred-flag">'+flagImg(ac,'2.2em')+'</div><div class="pred-tname">'+a[1]+'</div><div class="pred-rank">FIFA '+a[2]+'위</div><div class="pred-hist-s">'+a[4]+' &middot; '+a[3]+'회 출전</div></div>';
+  html += '</div>';
+  html += '<div class="pred-score-wrap"><div class="pred-score-lbl">&#127919; 예상 스코어</div>';
+  html += '<div class="pred-score"><div class="pred-score-num" style="color:'+hCol+'">'+hGoals+'</div><div class="pred-score-dash">:</div><div class="pred-score-num" style="color:'+aCol+'">'+aGoals+'</div></div>';
+  html += '<div class="pred-winner" style="color:'+wc+'">&#127942; <em>'+wl+'</em></div></div>';
+  html += '<div class="pred-bar-wrap"><div class="pred-bar-lbl">';
+  html += '<span>'+flagImg(hc,'1em')+' '+h[1]+' <span class="pct" style="color:var(--blue)">'+hWin+'%</span></span>';
+  html += '<span style="color:var(--gold)">무 '+draw+'%</span>';
+  html += '<span><span class="pct" style="color:var(--red)">'+aWin+'%</span> '+a[1]+' '+flagImg(ac,'1em')+'</span>';
+  html += '</div><div class="pred-bar-bg"><div class="pred-bar-h" style="width:'+hWin+'%"></div><div class="pred-bar-draw" style="width:'+draw+'%"></div><div class="pred-bar-a" style="width:'+aWin+'%"></div></div></div>';
+  html += '<div class="pred-stats">';
+  html += '<div class="pred-stat"><div class="pred-stat-lbl">&#127885; FIFA 랭킹</div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(hc,'0.9em')+' '+h[1]+'</div><div class="pred-stat-val '+hRC+'">'+h[2]+'위</div></div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(ac,'0.9em')+' '+a[1]+'</div><div class="pred-stat-val '+aRC+'">'+a[2]+'위</div></div></div>';
+  html += '<div class="pred-stat"><div class="pred-stat-lbl">&#9917; 통산 승률</div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(hc,'0.9em')+' '+h[1]+'</div><div class="pred-stat-val">'+(hG>0?Math.round(h[5]/hG*100):'-')+'%</div></div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(ac,'0.9em')+' '+a[1]+'</div><div class="pred-stat-val">'+(aG>0?Math.round(a[5]/aG*100):'-')+'%</div></div></div>';
+  html += '<div class="pred-stat"><div class="pred-stat-lbl">&#128202; 통산 전적</div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(hc,'0.9em')+' '+h[1]+'</div><div class="pred-stat-val">'+h[5]+'승 '+h[7]+'무 '+h[6]+'패</div></div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(ac,'0.9em')+' '+a[1]+'</div><div class="pred-stat-val">'+a[5]+'승 '+a[7]+'무 '+a[6]+'패</div></div></div>';
+  html += '<div class="pred-stat"><div class="pred-stat-lbl">&#9917; 평균 득점</div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(hc,'0.9em')+' '+h[1]+'</div><div class="pred-stat-val">'+(hG>0?(h[8]/hG).toFixed(1):'-')+' 골</div></div>';
+  html += '<div class="pred-stat-row"><div class="pred-stat-team">'+flagImg(ac,'0.9em')+' '+a[1]+'</div><div class="pred-stat-val">'+(aG>0?(a[8]/aG).toFixed(1):'-')+' 골</div></div></div>';
+  html += '</div>';
+  html += '<div class="pred-analysis">';
+  html += '<strong>'+h[1]+'</strong>은(는) FIFA '+h[2]+'위 팀으로 월드컵 '+h[3]+'회 출전 경력을 보유하고 있으며, <strong>'+a[1]+'</strong>은(는) FIFA '+a[2]+'위 팀으로 '+a[3]+'회 출전 경력을 갖고 있습니다. ';
+  html += '피파 랭킹 차이는 <strong>'+Math.abs(h[2]-a[2])+'위</strong>이며, 랭킹 우위는 <strong>'+(h[2]<a[2]?h[1]:a[1])+'</strong>에게 있습니다. ';
+  if (winner === 'draw') html += '양 팀의 전력이 비교적 균등하여 <strong>무승부</strong> 가능성이 가장 높습니다.';
+  else html += '종합 전력 분석 결과 <strong>' + (winner==='home'?h[1]:a[1]) + '</strong>의 승리 가능성이 더 높습니다.';
+  html += '</div>';
+  // Player toggle buttons
+  html += '<div class="player-toggle-row">';
+  html += '<button class="player-toggle-btn" id="pbtn-home" onclick="showPlayers(\'' + hc + '\', \'home\')">&#128100; '+flagImg(hc,'1em')+' '+h[1]+' 주요 선수 보기</button>';
+  html += '<button class="player-toggle-btn" id="pbtn-away" onclick="showPlayers(\'' + ac + '\', \'away\')">&#128100; '+flagImg(ac,'1em')+' '+a[1]+' 주요 선수 보기</button>';
+  html += '</div>';
+  html += buildPlayerSection(hc, 'home');
+  html += buildPlayerSection(ac, 'away');
+  html += '<p style="margin-top:8px;font-size:9px;color:var(--muted);border-top:1px solid rgba(255,255,255,.07);padding-top:6px">&#9888; FIFA 공식 랭킹, 월드컵 통산 전적, 득실 데이터 기반 통계 분석입니다. 실제 결과와 다를 수 있습니다.</p>';
+  document.getElementById('pred-box').innerHTML = html;
+  document.getElementById('pred-overlay').classList.add('show');
+  document.getElementById('ext-close').classList.add('show');
+  document.getElementById('tap-hint').classList.add('show');
+}
+
+function closePred() {
+  document.getElementById('pred-overlay').classList.remove('show');
+  document.getElementById('ext-close').classList.remove('show');
+  document.getElementById('tap-hint').classList.remove('show');
+}
+function closeOnBg(e) { if (e.target === document.getElementById('pred-overlay')) closePred(); }
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePred(); });
+
+// DATE SIDEBAR
+var activeDate = DATE_META[0].k;
+function buildSidebar() {
+  var sb = document.getElementById('date-sidebar');
+  var html = '<div class="dsb-lbl">&#128197; 날짜 선택</div>';
+  for (var i=0; i<DATE_META.length; i++) {
+    var d = DATE_META[i];
+    var onCls = d.k === activeDate ? 'on' : '';
+    var korCls = d.kor ? 'kor' : '';
+    html += '<button class="date-btn '+onCls+' '+korCls+'" onclick="selectDate(\''+d.k+'\')">';
+    html += '<div class="d-info"><div class="d-date">'+d.l+'</div><div class="d-dow">'+d.d+'요일</div><div class="d-cnt">'+d.c+'경기'+(d.kor?' &#128308;':'')+'</div></div>';
+    html += '<div class="d-dot"></div></button>';
+  }
+  sb.innerHTML = html;
+}
+
+
+// 경기 결과 (KST 날짜키 기준)
+var RESULTS = {
+  'MEX_RSA_0612금_04:00': [2, 0],
+  'KOR_CZE_0612금_11:00': [2, 1],
+  'CAN_BIH_0613토_04:00': [1, 1],
+  'USA_PAR_0613토_10:00': [4, 1]
+};
+
+function getResult(hc, ac, dk, kst) {
+  var key = hc + '_' + ac + '_' + dk + '_' + kst;
+  return RESULTS[key] || null;
+}
+
+function buildMatchList(dateKey) {
+  var idxs = [];
+  for (var i=0; i<GM.length; i++) { if (GM[i][3] === dateKey) idxs.push(i); }
+  idxs.sort(function(a,b){ return GM[a][4].localeCompare(GM[b][4]); });
+  var panel = document.getElementById('match-panel');
+  if (!idxs.length) {
+    panel.innerHTML = '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--muted)"><div style="font-size:36px;opacity:.2">&#9917;</div><div style="font-size:11px">해당 날짜에 경기가 없습니다</div></div>';
+    return;
+  }
+  var html = '';
+  for (var j=0; j<idxs.length; j++) {
+    var idx = idxs[j];
+    var m = GM[idx];
+    var grp=m[0], hc=m[1], ac=m[2], dk=m[3], kst=m[4], stadium=m[5], city=m[6], note=m[7];
+    var h = T[hc] || ['&#127987;',hc,99,0,'-',0,0,0,0,0];
+    var a = T[ac] || ['&#127987;',ac,99,0,'-',0,0,0,0,0];
+    var isKor = hc==='KOR' || ac==='KOR';
+    var noteIsKor = note && note.indexOf('🔴') >= 0;
+    var korCls = isKor ? 'kor' : '';
+    var noteHtml = note ? '<div class="m-note '+(noteIsKor?'kor':'')+'">'+ note.replace('🔴','&#128308;').replace('⭐','&#11088;') +'</div>' : '';
+    html += '<div class="match-row '+korCls+' '+doneCls+'" onclick="openPred('+idx+')">';
+    html += '<div class="m-accent"></div>';
+    html += '<div class="m-time"><div class="m-kst">'+kst+'</div><div class="m-kst-lbl">KST</div>'+noteHtml+'</div>';
+    html += '<div class="m-grp"><span class="gtag">'+grp+'조</span></div>';
+    var res = getResult(hc, ac, dk, kst);
+    var doneCls = res ? 'done' : '';
+    var hScoreCol = res ? (res[0]>res[1]?'m-score-win':res[0]<res[1]?'m-score-lose':'m-score-draw') : 'm-score-h';
+    var aScoreCol = res ? (res[1]>res[0]?'m-score-win':res[1]<res[0]?'m-score-lose':'m-score-draw') : 'm-score-a';
+    var hNameStyle = res && res[0]>res[1] ? 'color:var(--gold);font-weight:900' : res && res[0]<res[1] ? 'color:var(--muted)' : '';
+    var aNameStyle = res && res[1]>res[0] ? 'color:var(--gold);font-weight:900' : res && res[1]<res[0] ? 'color:var(--muted)' : '';
+
+    html += '<div class="m-teams">';
+    html += '<div class="m-team"><div class="m-flag">'+flagImg(hc)+'</div><div class="m-info"><div class="m-name" style="'+hNameStyle+'">'+h[1]+'</div><div class="m-rank">FIFA '+h[2]+'위</div><div class="m-hist">'+h[4]+' &middot; '+h[3]+'회</div></div></div>';
+    if (res) {
+      html += '<div class="m-score-wrap"><div class="m-score-nums"><span class="'+hScoreCol+'">'+res[0]+'</span><span class="m-score-sep">:</span><span class="'+aScoreCol+'">'+res[1]+'</span></div><div class="m-ft-lbl">종료</div></div>';
+    } else {
+      html += '<div class="m-vs">VS</div>';
+    }
+    html += '<div class="m-team away"><div class="m-flag">'+flagImg(ac)+'</div><div class="m-info"><div class="m-name" style="'+aNameStyle+'">'+a[1]+'</div><div class="m-rank">FIFA '+a[2]+'위</div><div class="m-hist">'+a[4]+' &middot; '+a[3]+'회</div></div></div>';
+    html += '</div>';
+    html += '<div class="m-venue"><div class="v-city">'+city+'</div><div class="v-stadium">'+stadium+'</div><div class="v-click">&#128070; 승부 예측</div></div>';
+    html += '</div>';
+  }
+  panel.innerHTML = html;
+}
+function selectDate(key) { activeDate = key; buildSidebar(); buildMatchList(key); }
+
+function buildKO(sk, gid) {
+  var data = KO_DATA[sk];
+  var grid = document.getElementById(gid);
+  var html = '', last = '';
+  for (var i=0; i<data.length; i++) {
+    var m = data[i];
+    if (m.date !== last) { html += '<div class="ko-date-sep">&#128197; '+m.date+'</div>'; last = m.date; }
+    html += '<div class="ko-row'+(m.isFinal?' final-row':'')+'">';
+    html += '<div class="ko-accent"></div>';
+    html += '<div class="ko-time"><div class="ko-kst">'+m.kst+'</div><div class="ko-kst-lbl">KST</div></div>';
+    html += '<div class="ko-rtag"><span>'+m.round+'</span></div>';
+    html += '<div class="ko-matchup">'+m.matchup+'</div>';
+    html += '<div class="ko-venue">'+m.venue+'</div>';
+    html += '</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function showStage(s) {
+  var stages = ['group','r32','r16','qf','sf','final'];
+  var btns = document.querySelectorAll('.stab');
+  for (var i=0; i<btns.length; i++) btns[i].classList.toggle('on', stages[i]===s);
+  var panels = document.querySelectorAll('.stage-panel');
+  for (var j=0; j<panels.length; j++) panels[j].classList.remove('on');
+  document.getElementById('panel-'+s).classList.add('on');
+}
+
+buildSidebar();
+buildMatchList(activeDate);
+buildKO('r32','ko-r32');
+buildKO('r16','ko-r16');
+buildKO('qf','ko-qf');
+buildKO('sf','ko-sf');
+buildKO('final','ko-final');
+
+</script>
+
+<script>
+// ── Service Worker 등록 (PWA 필수)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      console.log('SW registered');
+    }).catch(function(err) {
+      console.log('SW error:', err);
+    });
+  });
+}
+
+// ── 안드로이드 Chrome 앱 설치 배너
+var deferredPrompt = null;
+var installBanner = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  showInstallBanner();
+});
+
+function showInstallBanner() {
+  if (installBanner) return;
+
+  installBanner = document.createElement('div');
+  installBanner.id = 'install-banner';
+  installBanner.style.cssText = [
+    'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:9999',
+    'display:flex', 'align-items:center', 'gap:12px',
+    'background:linear-gradient(135deg,#0D1529,#162135)',
+    'border-bottom:2px solid #D4AF37',
+    'padding:12px 16px',
+    'box-shadow:0 4px 20px rgba(0,0,0,0.6)',
+    'font-family:"Noto Sans KR",sans-serif'
+  ].join(';');
+
+  installBanner.innerHTML =
+    '<img src="/icon-192.png" style="width:44px;height:44px;border-radius:10px;flex-shrink:0">' +
+    '<div style="flex:1;min-width:0">' +
+      '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3">2026 북중미 월드컵</div>' +
+      '<div style="font-size:11px;color:#D4AF37;margin-top:2px">홈 화면에 앱으로 설치하기</div>' +
+    '</div>' +
+    '<button onclick="installApp()" style="' +
+      'background:#D4AF37;color:#000;border:none;border-radius:20px;' +
+      'padding:8px 16px;font-size:12px;font-weight:900;cursor:pointer;' +
+      'font-family:inherit;white-space:nowrap' +
+    '">설치</button>' +
+    '<button onclick="closeBanner()" style="' +
+      'background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:50%;' +
+      'width:28px;height:28px;font-size:16px;cursor:pointer;flex-shrink:0;' +
+      'display:flex;align-items:center;justify-content:center' +
+    '">&#10005;</button>';
+
+  document.body.prepend(installBanner);
+
+  // 배너 높이만큼 콘텐츠 내려주기
+  setTimeout(function() {
+    var h = installBanner.offsetHeight;
+    document.querySelector('.shell').style.marginTop = h + 'px';
+  }, 50);
+}
+
+function installApp() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result) {
+    if (result.outcome === 'accepted') {
+      closeBanner();
+    }
+    deferredPrompt = null;
+  });
+}
+
+function closeBanner() {
+  if (installBanner) {
+    installBanner.remove();
+    installBanner = null;
+    document.querySelector('.shell').style.marginTop = '';
+  }
+}
+
+// 설치 완료 시 배너 닫기
+window.addEventListener('appinstalled', function() {
+  closeBanner();
+});
+</script>
+
+</body>
+</html>

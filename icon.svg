@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <!-- 배경 -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a2a4a"/>
+      <stop offset="100%" stop-color="#09101F"/>
+    </radialGradient>
+    <radialGradient id="ballGrad" cx="38%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#e8e8e8"/>
+      <stop offset="100%" stop-color="#cccccc"/>
+    </radialGradient>
+    <radialGradient id="shine" cx="35%" cy="30%" r="40%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- 앱 배경 (둥근 모서리) -->
+  <rect width="192" height="192" rx="42" fill="url(#bg)"/>
+  
+  <!-- 금색 테두리 -->
+  <rect x="4" y="4" width="184" height="184" rx="38" fill="none" stroke="#D4AF37" stroke-width="4" opacity="0.8"/>
+  
+  <!-- 금색 상단 줄 -->
+  <rect x="0" y="0" width="192" height="6" rx="3" fill="#D4AF37" opacity="0.6"/>
+  
+  <!-- 축구공 -->
+  <circle cx="96" cy="93" r="58" fill="url(#ballGrad)"/>
+  
+  <!-- 축구공 오각형 패턴 (검정) -->
+  <!-- 중앙 오각형 -->
+  <polygon points="96,55 114,68 107,89 85,89 78,68" fill="#1a1a1a"/>
+  
+  <!-- 주변 오각형들 -->
+  <!-- 상단 왼쪽 -->
+  <polygon points="64,48 78,55 78,68 60,74 52,60" fill="#1a1a1a"/>
+  <!-- 상단 오른쪽 -->
+  <polygon points="128,48 140,60 132,74 114,68 114,55" fill="#1a1a1a"/>
+  <!-- 왼쪽 -->
+  <polygon points="44,80 60,74 78,89 70,108 48,108" fill="#1a1a1a"/>
+  <!-- 오른쪽 -->
+  <polygon points="148,80 144,108 122,108 114,89 132,74" fill="#1a1a1a"/>
+  <!-- 하단 왼쪽 -->
+  <polygon points="48,108 70,108 78,124 64,138 44,128" fill="#1a1a1a"/>
+  <!-- 하단 오른쪽 -->
+  <polygon points="144,108 148,128 128,138 114,124 122,108" fill="#1a1a1a"/>
+  <!-- 하단 중앙 -->
+  <polygon points="78,124 85,142 107,142 114,124 96,114" fill="#1a1a1a"/>
+  
+  <!-- 축구공 윤곽선 -->
+  <circle cx="96" cy="93" r="58" fill="none" stroke="#999" stroke-width="1.5"/>
+  
+  <!-- 광택 효과 -->
+  <ellipse cx="80" cy="72" rx="20" ry="14" fill="url(#shine)" opacity="0.5"/>
+  
+  <!-- 하단 텍스트 -->
+  <text x="96" y="168" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="11" font-weight="900" fill="#D4AF37" letter-spacing="0.5">2026 북중미</text>
+  <text x="96" y="181" text-anchor="middle" font-family="'Helvetica Neue', Arial, sans-serif" font-size="10" font-weight="700" fill="#F5D76E" letter-spacing="0.5">월드컵</text>
+</svg>
