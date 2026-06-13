@@ -952,7 +952,7 @@ function createInstallBar() {
 
   var installBtn = document.createElement('button');
   installBtn.style.cssText = 'background:' + (isIOS ? '#5856D6' : '#D4AF37') + ';color:' + (isIOS ? '#fff' : '#000') + ';border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0';
-  installBtn.textContent = isIOS ? '설치 방법 보기' : '앱 설치';
+  installBtn.textContent = '설치 안내';
   bar.appendChild(installBtn);
 
   var closeBtn = document.createElement('button');
@@ -984,11 +984,11 @@ function createInstallBar() {
 
     var title = document.createElement('div');
     title.style.cssText = 'font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center';
-    title.textContent = isIOS ? '📱 홈 화면에 추가하기' : '🤖 홈 화면에 추가하기';
+    title.textContent = isIOS ? 'Safari에서 이렇게 하세요' : 'Chrome에서 이렇게 하세요';
     box.appendChild(title);
 
     var steps = isIOS
-      ? [['1️⃣', '하단 가운데 공유 버튼 (□↑) 탭'], ['2️⃣', '홈 화면에 추가 선택 후 추가 탭']]
+      ? [['1️⃣', 'Safari 하단 공유 버튼 ' + '<svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:-4px;margin:0 2px"><path d="M9 1v13M9 1L5 5M9 1l4 4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11v8a1 1 0 001 1h14a1 1 0 001-1v-8" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>' + ' 탭'], ['2️⃣', '"홈 화면에 추가" 선택 → 추가 탭']]
       : [['1️⃣', 'Chrome 우상단 ⋮ 메뉴 탭'], ['2️⃣', '홈 화면에 추가 선택']];
 
     steps.forEach(function(step) {
@@ -1000,8 +1000,19 @@ function createInstallBar() {
 
     var okBtn = document.createElement('button');
     okBtn.style.cssText = 'width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;margin-top:6px';
-    okBtn.textContent = '확인';
-    okBtn.addEventListener('click', function() { overlay.remove(); });
+    okBtn.textContent = isIOS ? 'Safari로 열기' : 'Chrome으로 열기';
+    okBtn.addEventListener('click', function() {
+      overlay.remove();
+      if (isIOS) {
+        // iOS: Safari 공유 시트를 직접 열 수 없으므로
+        // 홈 화면 추가가 가능한 Safari로 페이지 열기
+        window.location.href = window.location.href;
+      } else {
+        // Android: Chrome intent로 강제 실행
+        var url = window.location.href;
+        window.location.href = 'intent://' + url.replace(/^https?:\/\//, '') + '#Intent;scheme=https;package=com.android.chrome;end';
+      }
+    });
     box.appendChild(okBtn);
 
     overlay.appendChild(box);
