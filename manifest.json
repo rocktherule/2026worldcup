@@ -2,8 +2,8 @@
   "name": "2026 북중미 월드컵",
   "short_name": "북중미 월드컵",
   "description": "2026 FIFA 월드컵 한국 KST 기준 경기 일정, 승부 예측, 주요 선수 정보",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/2026worldcup/",
+  "scope": "/2026worldcup/",
   "display": "standalone",
   "background_color": "#09101F",
   "theme_color": "#D4AF37",
@@ -11,25 +11,25 @@
   "lang": "ko-KR",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/2026worldcup/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/2026worldcup/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/2026worldcup/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/2026worldcup/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
