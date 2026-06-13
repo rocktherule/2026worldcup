@@ -934,83 +934,80 @@ function createInstallBar() {
   bannerShown = true;
 
   var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  var isAndroid = /android/i.test(navigator.userAgent);
 
+  // DOM으로 직접 생성 (innerHTML 문자열 없이)
   var bar = document.createElement('div');
   bar.id = 'pwa-bar';
-  bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0D1529,#162135);border-top:2px solid #D4AF37;padding:10px 14px;box-shadow:0 -4px 20px rgba(0,0,0,0.6);font-family:inherit;padding-bottom:calc(10px + env(safe-area-inset-bottom))';
+  bar.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9999;display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#0D1529,#162135);border-top:2px solid #D4AF37;padding:10px 14px;padding-bottom:calc(10px + env(safe-area-inset-bottom));box-shadow:0 -4px 20px rgba(0,0,0,0.6);font-family:inherit';
 
-  var btnLabel = isIOS ? '&#128247; 설치 방법 보기' : '&#8595; 앱 설치';
-  var btnColor = isIOS ? '#5856D6' : '#D4AF37';
-  var btnText = isIOS ? '#fff' : '#000';
+  var icon = document.createElement('img');
+  icon.src = '/2026worldcup/icon-192.png';
+  icon.style.cssText = 'width:40px;height:40px;border-radius:9px;flex-shrink:0';
+  bar.appendChild(icon);
 
-  bar.innerHTML =
-    '<img src="/2026worldcup/icon-192.png" style="width:40px;height:40px;border-radius:9px;flex-shrink:0">' +
-    '<div style="flex:1;min-width:0">' +
-      '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3">2026 북중미 월드컵</div>' +
-      '<div style="font-size:10px;color:#D4AF37;margin-top:1px">홈 화면에 앱으로 추가</div>' +
-    '</div>' +
-    '<button id="pwa-install-btn" style="background:' + btnColor + ';color:' + btnText + ';border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">' + btnLabel + '</button>' +
-    '<button id="pwa-close-btn" style="background:rgba(255,255,255,0.1);color:#aaa;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;flex-shrink:0">&#10005;</button>';
+  var info = document.createElement('div');
+  info.style.cssText = 'flex:1;min-width:0';
+  info.innerHTML = '<div style="font-size:13px;font-weight:900;color:#fff;line-height:1.3">2026 북중미 월드컵</div><div style="font-size:10px;color:#D4AF37;margin-top:1px">홈 화면에 앱으로 추가</div>';
+  bar.appendChild(info);
+
+  var installBtn = document.createElement('button');
+  installBtn.style.cssText = 'background:' + (isIOS ? '#5856D6' : '#D4AF37') + ';color:' + (isIOS ? '#fff' : '#000') + ';border:none;border-radius:20px;padding:8px 14px;font-size:12px;font-weight:900;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0';
+  installBtn.textContent = isIOS ? '설치 방법 보기' : '앱 설치';
+  bar.appendChild(installBtn);
+
+  var closeBtn = document.createElement('button');
+  closeBtn.style.cssText = 'background:rgba(255,255,255,0.1);color:#aaa;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;flex-shrink:0';
+  closeBtn.textContent = '✕';
+  closeBtn.addEventListener('click', closePwaBar);
+  bar.appendChild(closeBtn);
 
   document.body.appendChild(bar);
-  document.getElementById('pwa-close-btn').addEventListener('click', closePwaBar);
-
-  // iOS 안내 팝업
-  if (isIOS) {
-    document.getElementById('pwa-install-btn').addEventListener('click', function() {
-      var guide = document.createElement('div');
-      guide.id = 'ios-guide';
-      guide.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);display:flex;align-items:flex-end;justify-content:center;padding:20px';
-      guide.innerHTML =
-        '<div style="background:#1C2333;border:1px solid #D4AF37;border-radius:16px;padding:24px;width:100%;max-width:360px;font-family:inherit">' +
-          '<div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center">&#127852; 홈 화면에 추가하기</div>' +
-          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
-            '<div style="font-size:24px">1&#65039;&#8419;</div>' +
-            '<div style="font-size:13px;color:#ccc">하단 가운데 <strong style="color:#fff">공유 버튼 (&#9633;&#8679;)</strong> 탭</div>' +
-          '</div>' +
-          '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
-            '<div style="font-size:24px">2&#65039;&#8419;</div>' +
-            '<div style="font-size:13px;color:#ccc"><strong style="color:#fff">홈 화면에 추가</strong> 선택 후 추가 탭</div>' +
-          '</div>' +
-          '<button onclick="closeGuide('ios-guide')" style="width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">확인</button>' +
-        '</div>';
-      document.body.appendChild(guide);
-    });
-  } else {
-    // Android: 네이티브 프롬프트 또는 안내
-    document.getElementById('pwa-install-btn').addEventListener('click', function() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(function(r) {
-          if (r.outcome === 'accepted') closePwaBar();
-          deferredPrompt = null;
-        });
-      } else {
-        // Chrome 메뉴 안내
-        var guide = document.createElement('div');
-        guide.id = 'android-guide';
-        guide.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;padding:20px';
-        guide.innerHTML =
-          '<div style="background:#1C2333;border:1px solid #D4AF37;border-radius:16px;padding:24px;width:100%;max-width:360px;font-family:inherit">' +
-            '<div style="font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center">&#128241; 홈 화면에 추가하기</div>' +
-            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
-              '<div style="font-size:24px">1&#65039;&#8419;</div>' +
-              '<div style="font-size:13px;color:#ccc">Chrome 우상단 <strong style="color:#fff">&#8942; 메뉴</strong> 탭</div>' +
-            '</div>' +
-            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px">' +
-              '<div style="font-size:24px">2&#65039;&#8419;</div>' +
-              '<div style="font-size:13px;color:#ccc"><strong style="color:#fff">홈 화면에 추가</strong> 선택</div>' +
-            '</div>' +
-            '<button onclick="closeGuide('android-guide')" style="width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit">확인</button>' +
-          '</div>';
-        document.body.appendChild(guide);
-      }
-    });
-  }
 
   var shell = document.querySelector('.shell');
   if (shell) shell.style.paddingBottom = '70px';
+
+  installBtn.addEventListener('click', function() {
+    if (!isIOS && deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(r) {
+        if (r.outcome === 'accepted') closePwaBar();
+        deferredPrompt = null;
+      });
+      return;
+    }
+    // 안내 팝업 (DOM으로 생성)
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.85);display:flex;align-items:' + (isIOS ? 'flex-end' : 'center') + ';justify-content:center;padding:20px';
+
+    var box = document.createElement('div');
+    box.style.cssText = 'background:#1C2333;border:1px solid #D4AF37;border-radius:16px;padding:24px;width:100%;max-width:360px;font-family:inherit';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center';
+    title.textContent = isIOS ? '📱 홈 화면에 추가하기' : '🤖 홈 화면에 추가하기';
+    box.appendChild(title);
+
+    var steps = isIOS
+      ? [['1️⃣', '하단 가운데 공유 버튼 (□↑) 탭'], ['2️⃣', '홈 화면에 추가 선택 후 추가 탭']]
+      : [['1️⃣', 'Chrome 우상단 ⋮ 메뉴 탭'], ['2️⃣', '홈 화면에 추가 선택']];
+
+    steps.forEach(function(step) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;padding:10px;background:rgba(255,255,255,.05);border-radius:10px';
+      row.innerHTML = '<div style="font-size:22px;flex-shrink:0">' + step[0] + '</div><div style="font-size:13px;color:#ccc">' + step[1] + '</div>';
+      box.appendChild(row);
+    });
+
+    var okBtn = document.createElement('button');
+    okBtn.style.cssText = 'width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;margin-top:6px';
+    okBtn.textContent = '확인';
+    okBtn.addEventListener('click', function() { overlay.remove(); });
+    box.appendChild(okBtn);
+
+    overlay.appendChild(box);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
+  });
 }
 
 
@@ -1186,5 +1183,6 @@ window.addEventListener('load', function() {
   setInterval(fetchResults, 5*60*1000);
   setTimeout(createInstallBar, 1200);
 });
-
->
+</script>
+</body>
+</html>
