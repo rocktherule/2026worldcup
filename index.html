@@ -362,7 +362,7 @@ var FALLBACK_RESULTS = {
   'KOR_CZE':[2,1,'FINISHED'],  // 6/11
   'CAN_BIH':[1,1,'FINISHED'],  // 6/12
   'USA_PAR':[4,1,'FINISHED'],  // 6/12
-  'QAT_SUI':[1,1,'FINISHED'],  // 6/13 카타르1-1스위스
+  'QAT_SUI':[1,1,'FINISHED'],  // 6/13
   'BRA_MAR':[1,1,'FINISHED'],  // 6/13
   'HAI_SCO':[0,1,'FINISHED'],  // 6/13
   'AUS_TUR':[2,0,'FINISHED']   // 6/13
@@ -940,7 +940,20 @@ function closeOnBg(e) { if (e.target === document.getElementById('pred-overlay')
 document.addEventListener('keydown', function(e){ if(e.key==='Escape') closePred(); });
 
 // DATE SIDEBAR
-var activeDate = DATE_META[0].k;
+// 오늘 KST 날짜로 자동 이동
+var activeDate = (function() {
+  var kst = new Date(Date.now() + 9*60*60*1000);
+  var mm = String(kst.getUTCMonth()+1).padStart(2,'0');
+  var dd = String(kst.getUTCDate()).padStart(2,'0');
+  var days = ['일','월','화','수','목','금','토'];
+  var dow = days[kst.getUTCDay()];
+  var key = mm+dd+dow;
+  // DATE_META에 있는 날짜면 그걸로, 없으면 첫째 날
+  for (var i=0; i<DATE_META.length; i++) {
+    if (DATE_META[i].k === key) return key;
+  }
+  return DATE_META[0].k;
+})();
 function buildSidebar() {
   var sb = document.getElementById('date-sidebar');
   var html = '<div class="dsb-lbl">&#128197; 날짜 선택</div>';
@@ -1327,51 +1340,39 @@ function createInstallBar() {
 function showGuide(isIOS) {
   var ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.85);'
-                   + 'display:flex;align-items:' + (isIOS ? 'flex-end' : 'center')
-                   + ';justify-content:center;padding:20px';
+                   + 'display:flex;align-items:flex-end;justify-content:center;padding:20px';
 
   var box = document.createElement('div');
   box.style.cssText = 'background:#1C2333;border:1px solid #D4AF37;border-radius:16px;'
-                    + 'padding:24px;width:100%;max-width:360px;font-family:inherit';
+                    + 'padding:24px;width:100%;max-width:360px;font-family:inherit;margin-bottom:10px';
 
   var ttl = document.createElement('div');
   ttl.style.cssText = 'font-size:15px;font-weight:900;color:#fff;margin-bottom:16px;text-align:center';
   ttl.textContent = '이렇게 하세요';
   box.appendChild(ttl);
 
-  var shareIcon = '<svg width="15" height="18" viewBox="0 0 18 22" fill="none"'
-    + ' xmlns="http://www.w3.org/2000/svg"'
-    + ' style="display:inline-block;vertical-align:-3px;margin:0 2px">'
-    + '<path d="M9 1v13M9 1L5 5M9 1l4 4"'
-    + ' stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
-    + '<path d="M1 11v8a1 1 0 001 1h14a1 1 0 001-1v-8"'
-    + ' stroke="#007AFF" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  var steps = [
+    '1️⃣  보내드린 링크를 Safari에서 열어주세요',
+    '2️⃣  우하단 점 세 개 누르기',
+    '3️⃣  공유',
+    '4️⃣  홈 화면에 추가'
+  ];
 
-  var step1 = document.createElement('div');
-  step1.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;'
-                      + 'padding:10px;background:rgba(255,255,255,.05);border-radius:10px;'
-                      + 'font-size:13px;color:#ccc';
-  step1.innerHTML = isIOS
-    ? '1️⃣&nbsp; Safari 우상단 ⋯ 탭 → 공유 ' + shareIcon + ' 탭'
-    : '1️⃣&nbsp; Chrome 우상단 ⋮ 탭';
-
-  var step2 = document.createElement('div');
-  step2.style.cssText = step1.style.cssText;
-  step2.innerHTML = isIOS
-    ? '2️⃣&nbsp; “홈 화면에 추가” 선택 → 추가 탭'
-    : '2️⃣&nbsp; “홈 화면에 추가” 선택';
-
-  box.appendChild(step1);
-  box.appendChild(step2);
+  steps.forEach(function(txt) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px;'
+                      + 'padding:12px;background:rgba(255,255,255,.05);border-radius:10px;'
+                      + 'font-size:13px;color:#ccc;line-height:1.4';
+    row.textContent = txt;
+    box.appendChild(row);
+  });
 
   var ok = document.createElement('button');
   ok.style.cssText = 'width:100%;background:#D4AF37;color:#000;border:none;border-radius:12px;'
                    + 'padding:12px;font-size:14px;font-weight:900;cursor:pointer;'
                    + 'font-family:inherit;margin-top:6px';
   ok.textContent = '확인';
-  ok.addEventListener('click', function() {
-    ov.remove();
-  });
+  ok.addEventListener('click', function() { ov.remove(); });
   box.appendChild(ok);
 
   ov.appendChild(box);
@@ -1379,13 +1380,6 @@ function showGuide(isIOS) {
   document.body.appendChild(ov);
 }
 
-</script>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('/2026worldcup/sw.js');
-  });
-}
 </script>
 </body>
 </html>
