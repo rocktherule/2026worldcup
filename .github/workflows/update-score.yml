@@ -1,0 +1,158 @@
+name: Update World Cup Scores
+
+on:
+  schedule:
+    # 매 경기 후 업데이트 - KST 기준 주요 경기 종료 후 실행
+    # UTC 기준 (KST - 9시간)
+    - cron: '30 19 * * *'   # KST 04:30 (새벽 04:00 경기 종료 후)
+    - cron: '0 22 * * *'    # KST 07:00 (오전 07:00 경기 종료 후)
+    - cron: '30 0 * * *'    # KST 09:30 (오전 10:00 경기 전)
+    - cron: '30 2 * * *'    # KST 11:30 (오전 11:00 경기 종료 후)
+    - cron: '0 5 * * *'     # KST 14:00 (오후 경기 전)
+    - cron: '0 8 * * *'     # KST 17:00
+    - cron: '30 14 * * *'   # KST 23:30 (자정 경기 전)
+  workflow_dispatch:  # 수동 실행도 가능
+
+jobs:
+  update-scores:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fetch World Cup Results & Update
+        run: |
+          python3 << 'PYEOF'
+          import urllib.request, json, re, sys, os
+          from datetime import datetime, timezone, timedelta
+
+          KST = timezone(timedelta(hours=9))
+          now_kst = datetime.now(KST)
+          today_str = now_kst.strftime('%Y-%m-%d')
+          print(f"실행 시간 (KST): {now_kst.strftime('%Y-%m-%d %H:%M')}")
+
+          # 팀명 매핑
+          WNAME = {
+            'Mexico':'MEX','South Africa':'RSA','South Korea':'KOR',
+            'Czech Republic':'CZE','Canada':'CAN',
+            'Bosnia and Herzegovina':'BIH','Bosnia':'BIH',
+            'Qatar':'QAT','Switzerland':'SUI','Brazil':'BRA',
+            'Morocco':'MAR','Haiti':'HAI','Scotland':'SCO',
+            'United States':'USA','USA':'USA','Paraguay':'PAR',
+            'Australia':'AUS','Turkey':'TUR','Turkiye':'TUR',
+            'Germany':'GER','Curaçao':'CUW','Curacao':'CUW',
+            "Ivory Coast":'CIV',"Cote d'Ivoire":'CIV','Ecuador':'ECU',
+            'Netherlands':'NED','Japan':'JPN','Sweden':'SWE',
+            'Tunisia':'TUN','Belgium':'BEL','Egypt':'EGY',
+            'Iran':'IRN','New Zealand':'NZL','Spain':'ESP',
+            'Cape Verde':'CPV','Saudi Arabia':'KSA','Uruguay':'URU',
+            'France':'FRA','Senegal':'SEN','Iraq':'IRQ','Norway':'NOR',
+            'Argentina':'ARG','Algeria':'ALG','Austria':'AUT',
+            'Jordan':'JOR','Portugal':'POR','DR Congo':'COD',
+            'Congo DR':'COD','Uzbekistan':'UZB','Colombia':'COL',
+            'England':'ENG','Croatia':'CRO','Ghana':'GHA','Panama':'PAN'
+          }
+
+          results = {}
+
+          def fetch_today():
+            url = 'https://wcup2026.org/api/data.php?action=today'
+            try:
+              req = urllib.request.Request(url, headers={'User-Agent':'Mozilla/5.0'})
+              with urllib.request.urlopen(req, timeout=10) as r:
+                d = json.loads(r.read())
+                if d.get('ok') and d.get('matches'):
+                  for g in d['matches']:
+                    if g.get('status') != 'finished' or not g.get('score'):
+                      continue
+                    h = WNAME.get(g['team1'])
+                    a = WNAME.get(g['team2'])
+                    if not h or not a: continue
+                    results[h+'_'+a] = [int(g['score'][0]), int(g['score'][1]), 'FINISHED']
+                  print(f"today API: {len(results)}개 결과")
+            except Exception as e:
+              print(f"today API 실패: {e}")
+
+          def fetch_worldcup26():
+            url = 'https://worldcup26.ir/get/games'
+            try:
+              req = urllib.request.Request(url, headers={'User-Agent':'Mozilla/5.0'})
+              with urllib.request.urlopen(req, timeout=10) as r:
+                games = json.loads(r.read())
+                if not isinstance(games, list):
+                  games = games.get('games', [])
+                before = len(results)
+                for g in games:
+                  finished = (g.get('finished') == True or 
+                              str(g.get('finished','')).upper() == 'TRUE' or
+                              g.get('status') == 'FINISHED')
+                  if not finished: continue
+                  hg = g.get('home_score', g.get('home_goals'))
+                  ag = g.get('away_score', g.get('away_goals'))
+                  if hg is None or ag is None: continue
+                  
+                  ht = g.get('home_team', {})
+                  at = g.get('away_team', {})
+                  hname = ht.get('name','') if isinstance(ht,dict) else str(ht)
+                  aname = at.get('name','') if isinstance(at,dict) else str(at)
+                  h = WNAME.get(hname) or g.get('home_team_code')
+                  a = WNAME.get(aname) or g.get('away_team_code')
+                  if not h or not a: continue
+                  results[h+'_'+a] = [int(hg), int(ag), 'FINISHED']
+                print(f"worldcup26.ir: {len(results)-before}개 추가, 총 {len(results)}개")
+            except Exception as e:
+              print(f"worldcup26.ir 실패: {e}")
+
+          fetch_today()
+          fetch_worldcup26()
+
+          if not results:
+            print("결과 없음 - 업데이트 스킵")
+            sys.exit(0)
+
+          print(f"\n수집된 결과 ({len(results)}개):")
+          for k,v in sorted(results.items()):
+            print(f"  {k}: {v[0]}-{v[1]}")
+
+          # index.html 업데이트
+          with open('index.html','r',encoding='utf-8') as f:
+            content = f.read()
+
+          # FALLBACK_RESULTS 블록 생성
+          lines = ['var FALLBACK_RESULTS = {']
+          for k, v in sorted(results.items()):
+            lines.append(f"  '{k}':[{v[0]},{v[1]},'FINISHED'],")
+          lines.append('};')
+          new_fb = '\n'.join(lines)
+
+          # 기존 FALLBACK_RESULTS 교체
+          pattern = r'var FALLBACK_RESULTS = \{[^}]*\};'
+          if re.search(pattern, content, re.DOTALL):
+            content = re.sub(pattern, new_fb, content, flags=re.DOTALL)
+            print("\nFALLBACK_RESULTS 업데이트 완료")
+          else:
+            print("FALLBACK_RESULTS 패턴 못 찾음!")
+            sys.exit(1)
+
+          with open('index.html','w',encoding='utf-8') as f:
+            f.write(content)
+
+          print(f"index.html 저장 완료 ({len(content):,} chars)")
+          PYEOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --staged --quiet; then
+            echo "변경사항 없음 - 커밋 스킵"
+          else
+            MATCH_COUNT=$(grep -o "'[A-Z]*_[A-Z]*'" index.html | sort -u | wc -l)
+            git commit -m "⚽ 월드컵 결과 자동 업데이트 $(date '+%Y-%m-%d %H:%M KST') [${MATCH_COUNT}경기]"
+            git push
+            echo "✅ 푸시 완료"
+          fi
